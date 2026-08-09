@@ -6,6 +6,6 @@ export const authClient = createAuthClient({
   cookiePrefix,
 });
 
-export const { getSession, signIn, signOut, useSession } = authClient;
+export const { getSession, signIn, signOut, signUp, useSession } = authClient;
 
 export type { Session, SessionUser } from "./auth";

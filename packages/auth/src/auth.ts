@@ -27,7 +27,9 @@ export const authOptions: BetterAuthOptions = {
     usePlural: true,
   }),
   emailAndPassword: {
-    enabled: false,
+    enabled: true,
+    minPasswordLength: 8,
+    maxPasswordLength: 256,
   },
   account: {
     accountLinking: {

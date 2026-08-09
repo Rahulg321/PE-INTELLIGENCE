@@ -32,10 +32,12 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link to="/dashboard">
-                <span className="flex aspect-square size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                  PE
+                <span className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <span className="text-sm font-semibold">PE</span>
                 </span>
-                <span className="text-base font-semibold">PE Intelligence</span>
+                <span className="text-base font-semibold tracking-[-0.02em]">
+                  PE Intelligence
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -76,10 +78,10 @@ export function AppSidebar() {
                 <img
                   src={user.image}
                   alt=""
-                  className="size-8 rounded-md object-cover"
+                  className="size-8 rounded-full object-cover"
                 />
               ) : (
-                <span className="flex aspect-square size-8 items-center justify-center rounded-md bg-muted">
+                <span className="flex aspect-square size-8 items-center justify-center rounded-full bg-muted font-semibold">
                   {(user?.name ?? 'U').charAt(0).toUpperCase()}
                 </span>
               )}

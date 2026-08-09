@@ -3,9 +3,10 @@ import { users, sessions, accounts, verifications, rateLimits } from "./auth";
 import { firms, investmentMandates, mandateSectors, mandateCriteria } from "./firms";
 import { deals } from "./deals";
 import { posts } from "./posts";
+import { onboardingDrafts } from "./onboarding-drafts";
 
 export const relations = defineRelations(
-    { users, sessions, accounts, verifications, rateLimits, firms, investmentMandates, mandateSectors, mandateCriteria, deals, posts },
+    { users, sessions, accounts, verifications, rateLimits, firms, investmentMandates, mandateSectors, mandateCriteria, deals, posts, onboardingDrafts },
     (helpers) => ({
         users: {
             sessions: helpers.many.sessions({ from: [helpers.users.id], to: [helpers.sessions.userId] }),
@@ -13,6 +14,7 @@ export const relations = defineRelations(
             firms: helpers.many.firms({ from: [helpers.users.id], to: [helpers.firms.ownerUserId] }),
             deals: helpers.many.deals({ from: [helpers.users.id], to: [helpers.deals.userId] }),
             posts: helpers.many.posts({ from: [helpers.users.id], to: [helpers.posts.ownerId] }),
+            onboardingDrafts: helpers.one.onboardingDrafts({ from: [helpers.users.id], to: [helpers.onboardingDrafts.userId] }),
         },
         sessions: {
             users: helpers.one.users({ from: [helpers.sessions.userId], to: [helpers.users.id] }),
@@ -37,6 +39,9 @@ export const relations = defineRelations(
         },
         deals: {
             users: helpers.one.users({ from: [helpers.deals.userId], to: [helpers.users.id] }),
+        },
+        onboardingDrafts: {
+            users: helpers.one.users({ from: [helpers.onboardingDrafts.userId], to: [helpers.users.id] }),
         },
     }),
 );

@@ -1,21 +1,51 @@
+import { eq } from 'drizzle-orm'
 import {
   db,
+  users,
   firms,
   investmentMandates,
   mandateSectors,
   mandateCriteria,
+  onboardingDrafts,
 } from 'db'
-import type { OnboardingOutput } from '../schemas'
+import type { OnboardingOutput, OnboardingDraft, OnboardingDraftData } from '../schemas'
 
 const randomId = () => crypto.randomUUID()
 
 export const onboardingService = {
   async getStatus(userId: string) {
-    const firm = await db.query.firms.findFirst({
-      where: { ownerUserId: userId },
+    const user = await db.query.users.findFirst({
+      where: { id: userId },
       columns: { onboardedAt: true },
     })
-    return { onboarded: Boolean(firm?.onboardedAt) }
+    return { onboarded: Boolean(user?.onboardedAt) }
+  },
+
+  async getDraft(userId: string): Promise<OnboardingDraft | null> {
+    const draft = await db.query.onboardingDrafts.findFirst({
+      where: { userId },
+    })
+    if (!draft) return null
+    return {
+      data: draft.data as OnboardingDraftData,
+      step: draft.step,
+    }
+  },
+
+  async saveDraft(userId: string, draft: OnboardingDraft) {
+    await db
+      .insert(onboardingDrafts)
+      .values({ userId, data: draft.data, step: draft.step })
+      .onConflictDoUpdate({
+        target: onboardingDrafts.userId,
+        set: { data: draft.data, step: draft.step },
+      })
+  },
+
+  async clearDraft(userId: string) {
+    await db
+      .delete(onboardingDrafts)
+      .where(eq(onboardingDrafts.userId, userId))
   },
 
   async save(userId: string, data: OnboardingOutput) {
@@ -36,8 +66,12 @@ export const onboardingService = {
         ownerUserId: userId,
         name: data.firmName,
         website: data.website || null,
-        onboardedAt: new Date(),
       })
+
+      await tx
+        .update(users)
+        .set({ onboardedAt: new Date() })
+        .where(eq(users.id, userId))
 
       await tx.insert(investmentMandates).values({
         id: mandateId,
@@ -84,6 +118,8 @@ export const onboardingService = {
         )
       }
     })
+
+    await this.clearDraft(userId)
 
     return { firmId, mandateId }
   },

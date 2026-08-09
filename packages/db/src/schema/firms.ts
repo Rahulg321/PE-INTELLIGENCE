@@ -10,7 +10,6 @@ export const firms = pgTable(
             .references(() => users.id, { onDelete: "cascade" }),
         name: text("name").notNull(),
         website: text("website"),
-        onboardedAt: timestamp("onboarded_at"),
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at")
             .defaultNow()

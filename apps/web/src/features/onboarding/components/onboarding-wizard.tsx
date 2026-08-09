@@ -1,13 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
 import { authClient } from '#/features/auth/client'
 import { saveOnboarding } from '../server/mutations/save-onboarding'
+import { saveOnboardingDraft } from '../server/mutations/save-onboarding-draft'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { Checkbox } from '#/components/ui/checkbox'
 import { GEOGRAPHIES, INVESTMENT_TYPES, SECTORS, CRITERIA } from '../constants'
 import type { CriterionImportance } from '../constants'
+import type { OnboardingDraft } from '../schemas'
 
 type CriteriaMap = Record<string, CriterionImportance>
 
@@ -39,19 +42,52 @@ const INITIAL_STATE: FormState = {
   criteria: {},
 }
 
-export function OnboardingWizard({ step }: { step: number }) {
-  const [form, setForm] = useState<FormState>(INITIAL_STATE)
+const isDirty = (form: FormState) =>
+  JSON.stringify(form) !== JSON.stringify(INITIAL_STATE)
+
+export function OnboardingWizard({
+  step,
+  draft,
+}: {
+  step: number
+  draft?: OnboardingDraft | null
+}) {
+  const [form, setForm] = useState<FormState>(draft?.data ?? INITIAL_STATE)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
   const router = useRouter()
 
+  const draftMutation = useMutation({
+    mutationFn: (payload: OnboardingDraft) =>
+      saveOnboardingDraft({ data: payload }),
+  })
+
   const goToStep = (next: number) => {
+    if (isDirty(form)) {
+      draftMutation.mutate({ data: form, step })
+    }
     navigate({
       to: '/onboarding',
       search: (prev) => ({ ...prev, step: next }),
     })
   }
+
+  useEffect(() => {
+    if (!draft || step === draft.step) return
+    navigate({
+      to: '/onboarding',
+      search: (prev) => ({ ...prev, step: draft.step }),
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!isDirty(form)) return
+    const timer = setTimeout(() => {
+      draftMutation.mutate({ data: form, step })
+    }, 600)
+    return () => clearTimeout(timer)
+  }, [form, step, draftMutation])
 
   const { data: session } = authClient.useSession()
 
@@ -110,10 +146,13 @@ export function OnboardingWizard({ step }: { step: number }) {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Set up your firm</h1>
-        <p className="mt-2 text-muted-foreground">
+    <div className="w-full px-6 py-12">
+      <div className="mb-10">
+        <span className="kicker">Setup</span>
+        <h1 className="mt-3 text-[34px] font-semibold leading-[1.47] tracking-[-0.374px]">
+          Set up your firm
+        </h1>
+        <p className="mt-2 text-[17px] leading-[1.47] tracking-[-0.374px] text-muted-foreground">
           We'll use this to personalize deal screening. Step {step + 1} of 4.
         </p>
       </div>
@@ -121,7 +160,9 @@ export function OnboardingWizard({ step }: { step: number }) {
       {step === 0 && (
         <div className="space-y-6">
           <div>
-            <Label htmlFor="firmName">Firm name</Label>
+            <Label htmlFor="firmName" className="text-xs font-semibold tracking-[-0.224px]">
+              Firm name
+            </Label>
             <Input
               id="firmName"
               className="mt-2"
@@ -131,7 +172,9 @@ export function OnboardingWizard({ step }: { step: number }) {
             />
           </div>
           <div>
-            <Label htmlFor="website">Website</Label>
+            <Label htmlFor="website" className="text-xs font-semibold tracking-[-0.224px]">
+              Website
+            </Label>
             <Input
               id="website"
               className="mt-2"
@@ -140,11 +183,26 @@ export function OnboardingWizard({ step }: { step: number }) {
               onChange={(e) => setForm({ ...form, website: e.target.value })}
             />
           </div>
-          <div className="rounded-md border bg-muted/30 p-4">
-            <p className="text-sm font-medium">{session?.user.name}</p>
-            <p className="text-sm text-muted-foreground">
-              {session?.user.email}
-            </p>
+          <div className="flex items-center gap-3 rounded-lg border border-hairline bg-card p-4">
+            {session?.user.image ? (
+              <img
+                src={session.user.image}
+                alt=""
+                className="size-10 rounded-full object-cover"
+              />
+            ) : (
+              <span className="flex size-10 items-center justify-center rounded-full bg-muted font-semibold">
+                {(session?.user.name ?? 'U').charAt(0).toUpperCase()}
+              </span>
+            )}
+            <div>
+              <p className="text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
+                {session?.user.name}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {session?.user.email}
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -152,12 +210,18 @@ export function OnboardingWizard({ step }: { step: number }) {
       {step === 1 && (
         <div className="space-y-8">
           <div>
-            <p className="mb-3 font-medium">Where do you invest?</p>
+            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
+              Where do you invest?
+            </p>
             <div className="flex flex-wrap gap-3">
               {GEOGRAPHIES.map((geo) => (
                 <Label
                   key={geo}
-                  className="flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2"
+                  className={`flex cursor-pointer items-center gap-2.5 rounded-full border border-hairline bg-card px-5 py-2.5 text-sm transition-colors ${
+                    form.geography.includes(geo)
+                      ? 'border-primary bg-primary/5 text-primary'
+                      : 'hover:border-ink-48'
+                  }`}
                 >
                   <Checkbox
                     checked={form.geography.includes(geo)}
@@ -169,12 +233,18 @@ export function OnboardingWizard({ step }: { step: number }) {
             </div>
           </div>
           <div>
-            <p className="mb-3 font-medium">Investment type</p>
+            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
+              Investment type
+            </p>
             <div className="flex flex-wrap gap-3">
               {INVESTMENT_TYPES.map((type) => (
                 <Label
                   key={type}
-                  className="flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2"
+                  className={`flex cursor-pointer items-center gap-2.5 rounded-full border border-hairline bg-card px-5 py-2.5 text-sm transition-colors ${
+                    form.investmentTypes.includes(type)
+                      ? 'border-primary bg-primary/5 text-primary'
+                      : 'hover:border-ink-48'
+                  }`}
                 >
                   <Checkbox
                     checked={form.investmentTypes.includes(type)}
@@ -186,7 +256,9 @@ export function OnboardingWizard({ step }: { step: number }) {
             </div>
           </div>
           <div>
-            <p className="mb-3 font-medium">Revenue range (USD)</p>
+            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
+              Revenue range (USD)
+            </p>
             <div className="flex items-center gap-3">
               <Input
                 type="number"
@@ -208,7 +280,9 @@ export function OnboardingWizard({ step }: { step: number }) {
             </div>
           </div>
           <div>
-            <p className="mb-3 font-medium">EBITDA range (USD)</p>
+            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
+              EBITDA range (USD)
+            </p>
             <div className="flex items-center gap-3">
               <Input
                 type="number"
@@ -235,12 +309,18 @@ export function OnboardingWizard({ step }: { step: number }) {
       {step === 2 && (
         <div className="space-y-8">
           <div>
-            <p className="mb-3 font-medium">Preferred sectors</p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
+              Preferred sectors
+            </p>
+            <div className="flex flex-wrap gap-3">
               {SECTORS.map((sector) => (
                 <Label
                   key={sector}
-                  className="flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2"
+                  className={`flex cursor-pointer items-center gap-2.5 rounded-full border border-hairline bg-card px-5 py-2.5 text-sm transition-colors ${
+                    form.preferredSectors.includes(sector)
+                      ? 'border-primary bg-primary/5 text-primary'
+                      : 'hover:border-ink-48'
+                  }`}
                 >
                   <Checkbox
                     checked={form.preferredSectors.includes(sector)}
@@ -252,14 +332,18 @@ export function OnboardingWizard({ step }: { step: number }) {
             </div>
           </div>
           <div>
-            <p className="mb-3 font-medium text-muted-foreground">
+            <p className="mb-3 text-sm text-muted-foreground">
               Sectors you explicitly avoid (optional)
             </p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="flex flex-wrap gap-3">
               {SECTORS.map((sector) => (
                 <Label
                   key={sector}
-                  className="flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2"
+                  className={`flex cursor-pointer items-center gap-2.5 rounded-full border border-hairline bg-card px-5 py-2.5 text-sm transition-colors ${
+                    form.excludedSectors.includes(sector)
+                      ? 'border-primary bg-primary/5 text-primary'
+                      : 'hover:border-ink-48'
+                  }`}
                 >
                   <Checkbox
                     checked={form.excludedSectors.includes(sector)}
@@ -275,16 +359,20 @@ export function OnboardingWizard({ step }: { step: number }) {
 
       {step === 3 && (
         <div className="space-y-6">
-          <p className="font-medium">What makes a company attractive to you?</p>
+          <p className="text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
+            What makes a company attractive to you?
+          </p>
           <div className="space-y-3">
             {CRITERIA.map((criterion) => {
               const value = form.criteria[criterion] ?? 'neutral'
               return (
                 <div
                   key={criterion}
-                  className="flex items-center justify-between rounded-md border px-4 py-3"
+                  className="flex items-center justify-between rounded-lg border border-hairline bg-card px-5 py-3"
                 >
-                  <span className="text-sm">{criterion}</span>
+                  <span className="text-[17px] leading-[1.47] tracking-[-0.374px]">
+                    {criterion}
+                  </span>
                   <div className="flex gap-2">
                     {(['required', 'preferred', 'neutral'] as const).map(
                       (option) => (
@@ -304,7 +392,7 @@ export function OnboardingWizard({ step }: { step: number }) {
               )
             })}
           </div>
-          <div className="rounded-md border border-dashed p-6 text-center">
+          <div className="rounded-lg border border-dashed border-hairline p-6 text-center">
             <p className="text-sm text-muted-foreground">
               Already have an investment criteria document? You'll be able to
               upload it later.
