@@ -7,6 +7,7 @@ import {
   SidebarTrigger,
 } from '#/components/ui/sidebar'
 import { getSessionStatus } from '#/features/auth/server/queries/get-session-status'
+import { getOnboardingStatus } from '#/features/onboarding/server/queries/get-onboarding-status'
 
 export const Route = createFileRoute('/_dashboard')({
   component: DashboardLayout,
@@ -14,6 +15,10 @@ export const Route = createFileRoute('/_dashboard')({
     const status = await getSessionStatus()
     if (!status.signedIn) {
       throw redirect({ to: '/login' })
+    }
+    const onboarding = await getOnboardingStatus()
+    if (!onboarding.onboarded) {
+      throw redirect({ to: '/onboarding' })
     }
   },
 })

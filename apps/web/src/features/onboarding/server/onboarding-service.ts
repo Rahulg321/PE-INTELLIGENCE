@@ -13,11 +13,20 @@ export const onboardingService = {
   async getStatus(userId: string) {
     const firm = await db.query.firms.findFirst({
       where: { ownerUserId: userId },
+      columns: { onboardedAt: true },
     })
-    return { hasFirm: Boolean(firm) }
+    return { onboarded: Boolean(firm?.onboardedAt) }
   },
 
   async save(userId: string, data: OnboardingOutput) {
+    const existing = await db.query.firms.findFirst({
+      where: { ownerUserId: userId },
+      columns: { id: true },
+    })
+    if (existing) {
+      return { firmId: existing.id, alreadyOnboarded: true }
+    }
+
     const firmId = randomId()
     const mandateId = randomId()
 
@@ -27,6 +36,7 @@ export const onboardingService = {
         ownerUserId: userId,
         name: data.firmName,
         website: data.website || null,
+        onboardedAt: new Date(),
       })
 
       await tx.insert(investmentMandates).values({

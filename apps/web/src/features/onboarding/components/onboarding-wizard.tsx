@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useRouter } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { authClient } from '#/features/auth/client'
 import { saveOnboarding } from '../server/mutations/save-onboarding'
 import { Button } from '#/components/ui/button'
@@ -39,12 +39,19 @@ const INITIAL_STATE: FormState = {
   criteria: {},
 }
 
-export function OnboardingWizard() {
-  const [step, setStep] = useState(0)
+export function OnboardingWizard({ step }: { step: number }) {
   const [form, setForm] = useState<FormState>(INITIAL_STATE)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
   const router = useRouter()
+
+  const goToStep = (next: number) => {
+    navigate({
+      to: '/onboarding',
+      search: (prev) => ({ ...prev, step: next }),
+    })
+  }
 
   const { data: session } = authClient.useSession()
 
@@ -312,7 +319,7 @@ export function OnboardingWizard() {
         <Button
           type="button"
           variant="ghost"
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
+          onClick={() => goToStep(Math.max(0, step - 1))}
           disabled={step === 0}
         >
           Back
@@ -320,7 +327,7 @@ export function OnboardingWizard() {
         {step < 3 ? (
           <Button
             type="button"
-            onClick={() => setStep((s) => s + 1)}
+            onClick={() => goToStep(step + 1)}
             disabled={!canContinue()}
           >
             Continue
