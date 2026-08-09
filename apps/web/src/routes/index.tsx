@@ -1,7 +1,16 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
+import { getSessionStatus } from '#/features/auth/server/queries/get-session-status'
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/')({
+  component: Home,
+  beforeLoad: async () => {
+    const status = await getSessionStatus()
+    if (!status.signedIn) {
+      throw redirect({ to: '/login' })
+    }
+  },
+})
 
 function Home() {
   return (

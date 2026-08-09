@@ -1,16 +1,9 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { DealsTable } from '#/features/deals/components/deals-table'
 import { NewDealForm } from '#/features/deals/components/new-deal-form'
-import { getSessionStatus } from '#/features/auth/server/queries/get-session-status'
 
-export const Route = createFileRoute('/deals')({
+export const Route = createFileRoute('/_dashboard/deals')({
   component: DealsRoute,
-  beforeLoad: async () => {
-    const status = await getSessionStatus()
-    if (!status.signedIn) {
-      throw redirect({ to: '/login' })
-    }
-  },
 })
 
 function DealsRoute() {
