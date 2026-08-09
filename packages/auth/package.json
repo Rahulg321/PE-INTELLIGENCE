@@ -1,0 +1,41 @@
+{
+  "name": "@repo/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./cookies": "./src/cookies.ts",
+    "./scopes": "./src/scopes.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "bun test",
+    "auth:generate": "better-auth generate --config src/auth.ts --output ../db/drizzle/auth-schema.generated.ts --y"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@repo/env": "workspace:*",
+    "better-auth": "^1.5.3",
+    "db": "workspace:*",
+    "drizzle-orm": "^1.0.0-rc.4"
+  },
+  "devDependencies": {
+    "@better-auth/cli": "latest",
+    "@repo/eslint-config": "*",
+    "@types/bun": "latest",
+    "@types/react": "^19.2.0",
+    "eslint": "^9.39.1",
+    "react": "^19.2.0",
+    "typescript": "^5.9.2"
+  }
+}

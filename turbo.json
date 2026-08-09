@@ -11,7 +11,12 @@
       "dependsOn": ["^lint"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types"],
+      "env": ["DATABASE_URL"]
+    },
+    "auth:generate": {
+      "dependsOn": ["^auth:generate"],
+      "env": ["DATABASE_URL"]
     },
     "dev": {
       "cache": false,

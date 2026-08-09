@@ -18,6 +18,9 @@ coverage
 # Turbo
 .turbo
 
+# Generated
+packages/db/drizzle/auth-schema.generated.ts
+
 # Vercel
 .vercel
 
@@ -36,3 +39,4 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+.gstack/

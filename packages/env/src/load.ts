@@ -1,3 +1,3 @@
 import { loadRootEnv } from "./index";
 
-loadRootEnv();
+void loadRootEnv();
