@@ -22,7 +22,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "dotenv": "^17.4.2",
+    "@repo/env": "workspace:*",
     "drizzle-orm": "^1.0.0-rc.4",
     "pg": "^8.23.0"
   }

@@ -1,0 +1,21 @@
+{
+  "name": "@repo/env",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./load": "./src/load.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@types/bun": "latest",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.2"
+  }
+}
