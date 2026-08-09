@@ -1,6 +1,6 @@
 {
   "name": "db",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "type": "module",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "tsx": "^4.23.11"
   },
   "exports": {
-    ".": "./index.ts"
+    ".": "./src/index.ts"
   },
   
   "peerDependencies": {

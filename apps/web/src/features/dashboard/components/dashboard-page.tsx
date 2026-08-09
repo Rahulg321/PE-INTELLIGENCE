@@ -1,21 +1,10 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { getDashboardData, getSessionStatus } from '#/lib/queries'
-import { authClient } from '#/lib/auth-client'
+import { authClient } from '#/features/auth/client'
 import { Button } from '#/components/ui/button'
+import type { getDashboardData } from '../server/queries/get-dashboard-data'
 
-export const Route = createFileRoute('/dashboard')({
-  component: Dashboard,
-  beforeLoad: async () => {
-    const status = await getSessionStatus()
-    if (!status.signedIn) {
-      throw redirect({ to: '/login' })
-    }
-  },
-  loader: async () => getDashboardData(),
-})
+type DashboardData = Awaited<ReturnType<typeof getDashboardData>>
 
-function Dashboard() {
-  const data = Route.useLoaderData()
+export function DashboardPage({ data }: { data: DashboardData }) {
   const mandate = data?.mandate
 
   return (

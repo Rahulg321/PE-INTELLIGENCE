@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import z from 'zod'
-import { addTodo } from '#/mcp-todos'
+import { addTodo } from '#/features/mcp/todos'
 
 export const server = new McpServer({
   name: 'start-server',

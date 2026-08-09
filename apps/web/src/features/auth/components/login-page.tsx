@@ -1,19 +1,7 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { authClient } from '#/lib/auth-client'
-import { getSessionStatus } from '#/lib/queries'
+import { authClient } from '../client'
 import { Button } from '#/components/ui/button'
 
-export const Route = createFileRoute('/login')({
-  component: Login,
-  beforeLoad: async () => {
-    const status = await getSessionStatus()
-    if (status.signedIn) {
-      throw redirect({ to: '/dashboard' })
-    }
-  },
-})
-
-function Login() {
+export function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-6">

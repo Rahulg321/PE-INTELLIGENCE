@@ -1,3 +1,6 @@
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+
 export function parseEnv(source: string): Record<string, string> {
   const result: Record<string, string> = {};
   for (const rawLine of source.split(/\r?\n/)) {
@@ -28,9 +31,7 @@ export function parseEnv(source: string): Record<string, string> {
 
 const KEY_PATTERN = /^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/;
 
-export async function findWorkspaceRoot(start: string): Promise<string | null> {
-  const { existsSync, readFileSync } = await import("node:fs");
-  const { dirname, join, resolve } = await import("node:path");
+export function findWorkspaceRoot(start: string): string | null {
   let dir = resolve(start);
   for (;;) {
     const pkgPath = join(dir, "package.json");
@@ -52,12 +53,10 @@ export async function findWorkspaceRoot(start: string): Promise<string | null> {
 
 let loaded = false;
 
-export async function loadRootEnv(): Promise<void> {
+export function loadRootEnv(): void {
   if (loaded) return;
   loaded = true;
-  const { existsSync, readFileSync } = await import("node:fs");
-  const { join } = await import("node:path");
-  const root = await findWorkspaceRoot(process.cwd());
+  const root = findWorkspaceRoot(process.cwd());
   if (!root) return;
   const merged: Record<string, string> = {};
   for (const filename of [".env", ".env.local"]) {

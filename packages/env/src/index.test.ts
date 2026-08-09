@@ -72,61 +72,61 @@ describe("parseEnv", () => {
 });
 
 describe("findWorkspaceRoot", () => {
-  test("returns null when no workspace is found", async () => {
+  test("returns null when no workspace is found", () => {
     const dir = mkdtempSync(join(tmpdir(), "env-non-ws-"));
     try {
-      expect(await findWorkspaceRoot(dir)).toBeNull();
+      expect(findWorkspaceRoot(dir)).toBeNull();
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
   });
 
-  test("finds the nearest directory with a workspaces field", async () => {
+  test("finds the nearest directory with a workspaces field", () => {
     const root = mkdtempSync(join(tmpdir(), "env-ws-"));
     const nested = join(root, "apps", "web", "src");
     try {
       mkdirSync(nested, { recursive: true });
       writeFileSync(join(root, "package.json"), JSON.stringify({ name: "root", workspaces: ["apps/*", "packages/*"] }));
-      expect(await findWorkspaceRoot(nested)).toBe(root);
-      expect(await findWorkspaceRoot(join(root, "apps"))).toBe(root);
+      expect(findWorkspaceRoot(nested)).toBe(root);
+      expect(findWorkspaceRoot(join(root, "apps"))).toBe(root);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
   });
 
-  test("prefers the innermost workspaces field when nested", async () => {
+  test("prefers the innermost workspaces field when nested", () => {
     const root = mkdtempSync(join(tmpdir(), "env-ws-nested-"));
     const inner = join(root, "apps");
     try {
       mkdirSync(inner, { recursive: true });
       writeFileSync(join(root, "package.json"), JSON.stringify({ name: "root", workspaces: ["apps/*"] }));
       writeFileSync(join(inner, "package.json"), JSON.stringify({ name: "apps", workspaces: ["*"] }));
-      expect(await findWorkspaceRoot(join(inner, "web"))).toBe(inner);
+      expect(findWorkspaceRoot(join(inner, "web"))).toBe(inner);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
   });
 
-  test("walks up through directories without a package.json", async () => {
+  test("walks up through directories without a package.json", () => {
     const root = mkdtempSync(join(tmpdir(), "env-ws2-"));
     const deep = join(root, "a", "b", "c");
     try {
       mkdirSync(deep, { recursive: true });
       writeFileSync(join(root, "package.json"), JSON.stringify({ name: "root", workspaces: ["apps/*"] }));
-      expect(await findWorkspaceRoot(deep)).toBe(root);
+      expect(findWorkspaceRoot(deep)).toBe(root);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
   });
 
-  test("ignores a malformed package.json and keeps walking", async () => {
+  test("ignores a malformed package.json and keeps walking", () => {
     const root = mkdtempSync(join(tmpdir(), "env-ws3-"));
     const nested = join(root, "sub");
     try {
       mkdirSync(nested, { recursive: true });
       writeFileSync(join(nested, "package.json"), "not json");
       writeFileSync(join(root, "package.json"), JSON.stringify({ name: "root", workspaces: ["sub"] }));
-      expect(await findWorkspaceRoot(nested)).toBe(root);
+      expect(findWorkspaceRoot(nested)).toBe(root);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -139,7 +139,7 @@ describe("loadRootEnv", () => {
   let root = "";
   let nested = "";
 
-  beforeAll(async () => {
+  beforeAll(() => {
     root = mkdtempSync(join(tmpdir(), "env-load-"));
     nested = join(root, "packages", "app");
     mkdirSync(nested, { recursive: true });
@@ -159,7 +159,7 @@ describe("loadRootEnv", () => {
     );
     process.chdir(nested);
     process.env.REAL_WINS = "real-value";
-    await loadRootEnv();
+    loadRootEnv();
   });
 
   afterAll(() => {
@@ -190,9 +190,9 @@ describe("loadRootEnv", () => {
     expect(process.env.LOCAL_ONLY).toBe("local-value");
   });
 
-  test("is idempotent and never throws when files are missing", async () => {
+  test("is idempotent and never throws when files are missing", () => {
     const snapshot = { ...process.env };
-    await expect(loadRootEnv()).resolves.toBeUndefined();
+    expect(loadRootEnv()).toBeUndefined();
     expect(process.env).toEqual(snapshot);
   });
 });
