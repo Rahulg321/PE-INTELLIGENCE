@@ -1,11 +1,11 @@
 import { createServerFn } from '@tanstack/react-start'
-import { requireUser } from '#/features/auth/server/get-session-user'
+import { authMiddleware } from '#/features/auth/server/auth-middleware'
 import { onboardingService } from '../onboarding-service'
 import { onboardingSchema } from '../../schemas'
 
 export const saveOnboarding = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
   .validator(onboardingSchema)
-  .handler(async ({ data }) => {
-    const user = await requireUser()
-    return onboardingService.save(user.id, data)
+  .handler(async ({ data, context }) => {
+    return onboardingService.save(context.user.id, data)
   })

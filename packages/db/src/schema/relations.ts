@@ -1,15 +1,17 @@
 import { defineRelations } from "drizzle-orm";
 import { users, sessions, accounts, verifications, rateLimits } from "./auth";
 import { firms, investmentMandates, mandateSectors, mandateCriteria } from "./firms";
+import { deals } from "./deals";
 import { posts } from "./posts";
 
 export const relations = defineRelations(
-    { users, sessions, accounts, verifications, rateLimits, firms, investmentMandates, mandateSectors, mandateCriteria, posts },
+    { users, sessions, accounts, verifications, rateLimits, firms, investmentMandates, mandateSectors, mandateCriteria, deals, posts },
     (helpers) => ({
         users: {
             sessions: helpers.many.sessions({ from: [helpers.users.id], to: [helpers.sessions.userId] }),
             accounts: helpers.many.accounts({ from: [helpers.users.id], to: [helpers.accounts.userId] }),
             firms: helpers.many.firms({ from: [helpers.users.id], to: [helpers.firms.ownerUserId] }),
+            deals: helpers.many.deals({ from: [helpers.users.id], to: [helpers.deals.userId] }),
             posts: helpers.many.posts({ from: [helpers.users.id], to: [helpers.posts.ownerId] }),
         },
         sessions: {
@@ -32,6 +34,9 @@ export const relations = defineRelations(
         },
         mandateCriteria: {
             investmentMandates: helpers.one.investmentMandates({ from: [helpers.mandateCriteria.mandateId], to: [helpers.investmentMandates.id] }),
+        },
+        deals: {
+            users: helpers.one.users({ from: [helpers.deals.userId], to: [helpers.users.id] }),
         },
     }),
 );

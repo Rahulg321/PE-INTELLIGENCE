@@ -1,11 +1,27 @@
-import { db } from 'db'
-
+import { db, deals } from 'db'
+import type { NewDealInput } from '../schemas'
 
 export const dealsService = {
     async getDeals(userId: string) {
-        const deals = await db.query.deals.findMany({
+        const items = await db.query.deals.findMany({
             where: { userId },
+            orderBy: (table, { desc }) => [desc(table.date)],
         })
-        return deals
+        return items
+    },
+
+    async createDeal(userId: string, data: NewDealInput) {
+        const [deal] = await db
+            .insert(deals)
+            .values({
+                id: crypto.randomUUID(),
+                userId,
+                name: data.name,
+                description: data.description,
+                amount: data.amount,
+                date: data.date,
+            })
+            .returning()
+        return deal
     },
 }

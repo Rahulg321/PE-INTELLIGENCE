@@ -1,9 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
 import { authMiddleware } from '#/features/auth/server/auth-middleware'
-import { dashboardService } from '../dashboard-service'
+import { dealsService } from '../deals-service'
 
-export const getDashboardData = createServerFn({ method: 'GET' })
+export const getDeals = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    return dashboardService.getData(context.user.id)
+    return dealsService.getDeals(context.user.id)
   })
