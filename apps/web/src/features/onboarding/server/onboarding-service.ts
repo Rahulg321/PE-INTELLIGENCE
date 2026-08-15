@@ -1,7 +1,6 @@
 import { eq } from 'drizzle-orm'
 import {
   db,
-  users,
   firms,
   investmentMandates,
   mandateSectors,
@@ -14,11 +13,11 @@ const randomId = () => crypto.randomUUID()
 
 export const onboardingService = {
   async getStatus(userId: string) {
-    const user = await db.query.users.findFirst({
-      where: { id: userId },
-      columns: { onboardedAt: true },
+    const firm = await db.query.firms.findFirst({
+      where: { ownerUserId: userId },
+      columns: { id: true },
     })
-    return { onboarded: Boolean(user?.onboardedAt) }
+    return { onboarded: Boolean(firm) }
   },
 
   async getDraft(userId: string): Promise<OnboardingDraft | null> {
@@ -69,11 +68,8 @@ export const onboardingService = {
       })
 
       await tx
-        .update(users)
-        .set({ onboardedAt: new Date() })
-        .where(eq(users.id, userId))
-
-      await tx.insert(investmentMandates).values({
+        .insert(investmentMandates)
+        .values({
         id: mandateId,
         firmId,
         geography: data.geography,

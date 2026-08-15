@@ -13,11 +13,9 @@ export async function handleMcpRequest(
     const [clientTransport, serverTransport] =
       InMemoryTransport.createLinkedPair()
 
-    let responseData: JSONRPCMessage | null = null
-
-    clientTransport.onmessage = (message: JSONRPCMessage) => {
-      responseData = message
-    }
+    const responsePromise = new Promise<JSONRPCMessage>((resolve) => {
+      clientTransport.onmessage = (message: JSONRPCMessage) => resolve(message)
+    })
 
     await server.connect(serverTransport)
 
@@ -26,7 +24,7 @@ export async function handleMcpRequest(
 
     await clientTransport.send(jsonRpcRequest)
 
-    await new Promise((resolve) => setTimeout(resolve, 10))
+    const responseData = await responsePromise
 
     await clientTransport.close()
     await serverTransport.close()

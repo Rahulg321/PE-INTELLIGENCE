@@ -10,40 +10,8 @@ import { Label } from '#/components/ui/label'
 import { Checkbox } from '#/components/ui/checkbox'
 import { GEOGRAPHIES, INVESTMENT_TYPES, SECTORS, CRITERIA } from '../constants'
 import type { CriterionImportance } from '../constants'
-import type { OnboardingDraft } from '../schemas'
-
-type CriteriaMap = Record<string, CriterionImportance>
-
-interface FormState {
-  firmName: string
-  website: string
-  geography: string[]
-  investmentTypes: string[]
-  minRevenue: string
-  maxRevenue: string
-  minEbitda: string
-  maxEbitda: string
-  preferredSectors: string[]
-  excludedSectors: string[]
-  criteria: CriteriaMap
-}
-
-const INITIAL_STATE: FormState = {
-  firmName: '',
-  website: '',
-  geography: [],
-  investmentTypes: [],
-  minRevenue: '',
-  maxRevenue: '',
-  minEbitda: '',
-  maxEbitda: '',
-  preferredSectors: [],
-  excludedSectors: [],
-  criteria: {},
-}
-
-const isDirty = (form: FormState) =>
-  JSON.stringify(form) !== JSON.stringify(INITIAL_STATE)
+import type { OnboardingDraft, OnboardingDraftData } from '../schemas'
+import { onboardingDraftDataSchema } from '../schemas'
 
 export function OnboardingWizard({
   step,
@@ -52,7 +20,9 @@ export function OnboardingWizard({
   step: number
   draft?: OnboardingDraft | null
 }) {
-  const [form, setForm] = useState<FormState>(draft?.data ?? INITIAL_STATE)
+  const [form, setForm] = useState<OnboardingDraftData>(
+    () => draft?.data ?? onboardingDraftDataSchema.parse({}),
+  )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -64,9 +34,7 @@ export function OnboardingWizard({
   })
 
   const goToStep = (next: number) => {
-    if (isDirty(form)) {
-      draftMutation.mutate({ data: form, step })
-    }
+    draftMutation.mutate({ data: form, step })
     navigate({
       to: '/onboarding',
       search: (prev) => ({ ...prev, step: next }),
@@ -82,7 +50,6 @@ export function OnboardingWizard({
   }, [])
 
   useEffect(() => {
-    if (!isDirty(form)) return
     const timer = setTimeout(() => {
       draftMutation.mutate({ data: form, step })
     }, 600)
@@ -91,7 +58,7 @@ export function OnboardingWizard({
 
   const { data: session } = authClient.useSession()
 
-  const toggle = (key: keyof FormState, value: string) => {
+  const toggle = (key: keyof OnboardingDraftData, value: string) => {
     setForm((prev) => {
       const current = prev[key] as string[]
       return {

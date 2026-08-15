@@ -1,11 +1,6 @@
 import { authClient } from '#/features/auth/client'
 import { Button } from '#/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '#/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import type { getDashboardData } from '../server/queries/get-dashboard-data'
 
 type DashboardData = Awaited<ReturnType<typeof getDashboardData>>

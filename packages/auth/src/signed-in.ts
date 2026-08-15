@@ -4,11 +4,6 @@ type SignedInHandler = (user: User & Record<string, any>) => Promise<void> | voi
 
 const handlers = new Set<SignedInHandler>();
 
-export const onSignedIn = (handler: SignedInHandler): (() => void) => {
-  handlers.add(handler);
-  return () => handlers.delete(handler);
-};
-
 export const notifySignedIn = async (
   user: User & Record<string, any>,
 ): Promise<void> => {

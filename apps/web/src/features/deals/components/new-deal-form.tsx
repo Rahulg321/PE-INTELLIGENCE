@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createDeal } from '../server/mutations/create-deal'
-import type { NewDealInput } from '../schemas'
+import type { NewDealFormInput } from '../schemas'
 import { Button } from '#/components/ui/button'
 import {
   Card,
@@ -17,7 +17,7 @@ export function NewDealForm() {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: (input: NewDealInput) => createDeal({ data: input }),
+    mutationFn: (input: NewDealFormInput) => createDeal({ data: input }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deals'] })
     },
@@ -47,8 +47,8 @@ export function NewDealForm() {
               {
                 name,
                 description,
-                amount: Number(amount),
-                date: new Date(date),
+                amount,
+                date,
               },
               {
                 onSuccess: () => {

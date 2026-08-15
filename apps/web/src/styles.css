@@ -101,7 +101,8 @@
 }
 
 @theme inline {
-  --font-sans: -apple-system, BlinkMacSystemFont, system-ui, 'SF Pro Display',
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, system-ui, 'SF Pro Display',
     'SF Pro Text', 'Inter', 'Segoe UI', sans-serif;
 
   /* Apple weight ladder: 300 / 400 / 600 / 700 — 500 deliberately absent */
@@ -244,7 +245,10 @@ pre code {
 
 button,
 a {
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
     transform 180ms ease;
 }
 

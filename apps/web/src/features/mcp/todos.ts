@@ -2,8 +2,6 @@ const todosPath = './mcp-todos.json'
 
 let todos: Todo[] | null = null
 
-let subscribers: ((todos: Todo[]) => void)[] = []
-
 export type Todo = {
   id: number
   title: string
@@ -33,13 +31,9 @@ const loadTodos = async (): Promise<Todo[]> => {
   return loaded
 }
 
-export async function getTodos(): Promise<Todo[]> {
-  return loadTodos()
-}
-
 export async function addTodo(title: string) {
   const current = await loadTodos()
-  const todo = { id: current.length + 1, title }
+  const todo = { id: (current.at(-1)?.id ?? 0) + 1, title }
   current.push(todo)
   if (isServer()) {
     try {
@@ -47,22 +41,5 @@ export async function addTodo(title: string) {
       fs.writeFileSync(todosPath, JSON.stringify(current, null, 2))
     } catch {}
   }
-  notifySubscribers()
   return todo
-}
-
-export function subscribeToTodos(callback: (todos: Todo[]) => void) {
-  subscribers.push(callback)
-  void loadTodos().then(callback)
-  return () => {
-    subscribers = subscribers.filter((cb) => cb !== callback)
-  }
-}
-
-function notifySubscribers() {
-  for (const cb of subscribers) {
-    try {
-      cb(todos ?? [])
-    } catch {}
-  }
 }

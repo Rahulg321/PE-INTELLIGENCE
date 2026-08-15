@@ -30,6 +30,9 @@ out/
 build
 dist
 
+# Runtime artifacts
+mcp-todos.json
+
 
 # Debug
 npm-debug.log*

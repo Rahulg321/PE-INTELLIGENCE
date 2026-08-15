@@ -33,11 +33,6 @@ export const env = Object.freeze({
   secret: readOptional("BETTER_AUTH_SECRET"),
   googleClientId: readOptional("GOOGLE_CLIENT_ID"),
   googleClientSecret: readOptional("GOOGLE_CLIENT_SECRET"),
-  allowedSignIn: readOptional("ALLOWED_SIGN_IN"),
-  workspaceId: readOptional("WORKSPACE_ID"),
-  workspaceSlug: readOptional("WORKSPACE_SLUG"),
-  workspaceName: readOptional("WORKSPACE_NAME"),
-  ssoSignInBaseUrl: readOptional("SSO_SIGN_IN_BASE_URL"),
 });
 
 export { isGoogleConfigured };

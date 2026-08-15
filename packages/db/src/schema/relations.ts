@@ -2,18 +2,16 @@ import { defineRelations } from "drizzle-orm";
 import { users, sessions, accounts, verifications, rateLimits } from "./auth";
 import { firms, investmentMandates, mandateSectors, mandateCriteria } from "./firms";
 import { deals } from "./deals";
-import { posts } from "./posts";
 import { onboardingDrafts } from "./onboarding-drafts";
 
 export const relations = defineRelations(
-    { users, sessions, accounts, verifications, rateLimits, firms, investmentMandates, mandateSectors, mandateCriteria, deals, posts, onboardingDrafts },
+    { users, sessions, accounts, verifications, rateLimits, firms, investmentMandates, mandateSectors, mandateCriteria, deals, onboardingDrafts },
     (helpers) => ({
         users: {
             sessions: helpers.many.sessions({ from: [helpers.users.id], to: [helpers.sessions.userId] }),
             accounts: helpers.many.accounts({ from: [helpers.users.id], to: [helpers.accounts.userId] }),
             firms: helpers.many.firms({ from: [helpers.users.id], to: [helpers.firms.ownerUserId] }),
             deals: helpers.many.deals({ from: [helpers.users.id], to: [helpers.deals.userId] }),
-            posts: helpers.many.posts({ from: [helpers.users.id], to: [helpers.posts.ownerId] }),
             onboardingDrafts: helpers.one.onboardingDrafts({ from: [helpers.users.id], to: [helpers.onboardingDrafts.userId] }),
         },
         sessions: {

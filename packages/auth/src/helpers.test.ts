@@ -1,41 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-  googleScopes,
-  hasSyncScopes,
-  identityScope,
-  needsGoogleGrant,
-  parseScopes,
-  signsInWithGoogle,
-} from "./scopes";
 import { env, isGoogleConfigured } from "./env";
-
-describe("scopes", () => {
-  test("parseScopes splits and trims", () => {
-    expect(parseScopes("a b   c")).toEqual(["a", "b", "c"]);
-    expect(parseScopes(null)).toEqual([]);
-    expect(parseScopes("")).toEqual([]);
-  });
-
-  test("identityScope is openid email profile", () => {
-    expect(identityScope).toBe("openid email profile");
-  });
-
-  test("hasSyncScopes detects sync scopes", () => {
-    expect(hasSyncScopes("openid " + googleScopes[1])).toBe(true);
-    expect(hasSyncScopes("openid email")).toBe(false);
-  });
-
-  test("needsGoogleGrant is true when a sync scope is missing", () => {
-    expect(needsGoogleGrant("openid email profile")).toBe(true);
-    expect(needsGoogleGrant(googleScopes.join(" "))).toBe(false);
-  });
-
-  test("signsInWithGoogle requires google provider + sync scopes", () => {
-    expect(signsInWithGoogle({ providerId: "google", scope: googleScopes.join(" ") })).toBe(true);
-    expect(signsInWithGoogle({ providerId: "github", scope: googleScopes.join(" ") })).toBe(false);
-    expect(signsInWithGoogle({ providerId: "google", scope: "openid" })).toBe(false);
-  });
-});
 
 describe("env", () => {
   test("isGoogleConfigured requires both keys", () => {

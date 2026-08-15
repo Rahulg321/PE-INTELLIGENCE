@@ -27,7 +27,7 @@ export const onboardingSearchSchema = z.object({
   step: z.coerce.number().int().min(0).max(3).default(0).catch(0),
 })
 
-const onboardingDraftDataSchema = z.object({
+export const onboardingDraftDataSchema = z.object({
   firmName: z.string().default(''),
   website: z.string().default(''),
   geography: z.array(z.string()).default([]),
