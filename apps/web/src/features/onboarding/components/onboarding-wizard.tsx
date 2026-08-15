@@ -1,17 +1,93 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
-import { authClient } from '#/features/auth/client'
 import { saveOnboarding } from '../server/mutations/save-onboarding'
 import { saveOnboardingDraft } from '../server/mutations/save-onboarding-draft'
 import { Button } from '#/components/ui/button'
-import { Input } from '#/components/ui/input'
-import { Label } from '#/components/ui/label'
-import { Checkbox } from '#/components/ui/checkbox'
-import { GEOGRAPHIES, INVESTMENT_TYPES, SECTORS, CRITERIA } from '../constants'
-import type { CriterionImportance } from '../constants'
-import type { OnboardingDraft, OnboardingDraftData } from '../schemas'
 import { onboardingDraftDataSchema } from '../schemas'
+import type { OnboardingDraft, OnboardingDraftData } from '../schemas'
+import { CreateWorkspaceStep } from './create-workspace-step'
+import { InvestmentStrategyStep } from './investment-strategy-step'
+import { TargetSectorsStep } from './target-sectors-step'
+import { InvestmentPreferencesStep } from './investment-preferences-step'
+import { ReviewStep } from './review-step'
+
+const STEPS = [
+  CreateWorkspaceStep,
+  InvestmentStrategyStep,
+  TargetSectorsStep,
+  InvestmentPreferencesStep,
+  ReviewStep,
+] as const
+
+const STEP_LABELS = [
+  'Create workspace',
+  'Investment strategy',
+  'Target sectors',
+  'Investment preferences',
+  'Review & complete',
+]
+
+export type OnboardingStepProps = {
+  form: OnboardingDraftData
+  onChange: (patch: Partial<OnboardingDraftData>) => void
+}
+
+const isDigits = (value: string) => /^\d+$/.test(value.trim())
+
+const toNumber = (value: string) => Number(value)
+
+const toOptionalNumber = (value: string) =>
+  value.trim() === '' ? undefined : Number(value)
+
+function sizeError(form: OnboardingDraftData): string | null {
+  if (form.minRevenue.trim() !== '' && !isDigits(form.minRevenue)) {
+    return 'Revenue must be a whole dollar amount.'
+  }
+  if (form.maxRevenue.trim() !== '' && !isDigits(form.maxRevenue)) {
+    return 'Revenue must be a whole dollar amount.'
+  }
+  if (form.minEbitda.trim() !== '' && !isDigits(form.minEbitda)) {
+    return 'EBITDA must be a whole dollar amount.'
+  }
+  if (form.maxEbitda.trim() !== '' && !isDigits(form.maxEbitda)) {
+    return 'EBITDA must be a whole dollar amount.'
+  }
+  if (form.minEbitda.trim() === '') return 'Enter a minimum EBITDA.'
+
+  const minRevenue = toOptionalNumber(form.minRevenue)
+  const maxRevenue = toOptionalNumber(form.maxRevenue)
+  if (minRevenue != null && maxRevenue != null && minRevenue > maxRevenue) {
+    return "Minimum revenue can't exceed maximum revenue."
+  }
+  const minEbitda = toNumber(form.minEbitda)
+  const maxEbitda = toOptionalNumber(form.maxEbitda)
+  if (maxEbitda != null && minEbitda > maxEbitda) {
+    return "Minimum EBITDA can't exceed maximum EBITDA."
+  }
+  return null
+}
+
+function getStepError(step: number, form: OnboardingDraftData): string | null {
+  if (step === 0) {
+    return form.firmName.trim().length >= 2
+      ? null
+      : 'Enter your workspace or firm name.'
+  }
+  if (step === 1) {
+    if (form.geography.length === 0) return 'Select at least one geography.'
+    if (form.investmentTypes.length === 0) {
+      return 'Select at least one investment type.'
+    }
+    return sizeError(form)
+  }
+  if (step === 2) {
+    return form.preferredSectors.length > 0 || form.noSectorPreference
+      ? null
+      : 'Select at least one preferred sector, or confirm you have no sector preference.'
+  }
+  return null
+}
 
 export function OnboardingWizard({
   step,
@@ -20,8 +96,8 @@ export function OnboardingWizard({
   step: number
   draft?: OnboardingDraft | null
 }) {
-  const [form, setForm] = useState<OnboardingDraftData>(
-    () => draft?.data ?? onboardingDraftDataSchema.parse({}),
+  const [form, setForm] = useState<OnboardingDraftData>(() =>
+    onboardingDraftDataSchema.parse(draft?.data ?? {}),
   )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,6 +108,9 @@ export function OnboardingWizard({
     mutationFn: (payload: OnboardingDraft) =>
       saveOnboardingDraft({ data: payload }),
   })
+
+  const patch = (p: Partial<OnboardingDraftData>) =>
+    setForm((prev) => ({ ...prev, ...p }))
 
   const goToStep = (next: number) => {
     draftMutation.mutate({ data: form, step })
@@ -56,36 +135,34 @@ export function OnboardingWizard({
     return () => clearTimeout(timer)
   }, [form, step, draftMutation])
 
-  const { data: session } = authClient.useSession()
-
-  const toggle = (key: keyof OnboardingDraftData, value: string) => {
-    setForm((prev) => {
-      const current = prev[key] as string[]
-      return {
-        ...prev,
-        [key]: current.includes(value)
-          ? current.filter((item) => item !== value)
-          : [...current, value],
-      }
-    })
+  const handleBack = () => {
+    setError(null)
+    goToStep(Math.max(0, step - 1))
   }
 
-  const setCriterion = (criterion: string, importance: CriterionImportance) => {
-    setForm((prev) => ({
-      ...prev,
-      criteria: { ...prev.criteria, [criterion]: importance },
-    }))
-  }
-
-  const canContinue = () => {
-    if (step === 0) return form.firmName.trim().length > 0
-    if (step === 1)
-      return form.geography.length > 0 && form.investmentTypes.length > 0
-    if (step === 2) return form.preferredSectors.length > 0
-    return true
+  const handleContinue = () => {
+    const err = getStepError(step, form)
+    if (err) {
+      setError(err)
+      return
+    }
+    setError(null)
+    goToStep(step + 1)
   }
 
   const submit = async () => {
+    if (submitting) return
+    for (let s = 0; s <= 3; s++) {
+      const err = getStepError(s, form)
+      if (err) {
+        setError(err)
+        navigate({
+          to: '/onboarding',
+          search: (prev) => ({ ...prev, step: s }),
+        })
+        return
+      }
+    }
     setSubmitting(true)
     setError(null)
     try {
@@ -95,278 +172,47 @@ export function OnboardingWizard({
           website: form.website,
           geography: form.geography,
           investmentTypes: form.investmentTypes,
-          minRevenue: form.minRevenue ? Number(form.minRevenue) : undefined,
-          maxRevenue: form.maxRevenue ? Number(form.maxRevenue) : undefined,
-          minEbitda: form.minEbitda ? Number(form.minEbitda) : undefined,
-          maxEbitda: form.maxEbitda ? Number(form.maxEbitda) : undefined,
-          preferredSectors: form.preferredSectors,
+          minRevenue: toOptionalNumber(form.minRevenue),
+          maxRevenue: toOptionalNumber(form.maxRevenue),
+          minEbitda: toNumber(form.minEbitda),
+          maxEbitda: toOptionalNumber(form.maxEbitda),
+          preferredSectors: form.noSectorPreference
+            ? []
+            : form.preferredSectors,
           excludedSectors: form.excludedSectors,
+          noSectorPreference: form.noSectorPreference,
           criteria: form.criteria,
+          dealbreakers: form.dealbreakers,
         },
       })
       await router.invalidate()
       await router.navigate({ to: '/dashboard' })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Something went wrong. Please try again.',
+      )
       setSubmitting(false)
     }
   }
 
+  const StepComponent = STEPS[step]
+
   return (
     <div className="w-full px-6 py-12">
       <div className="mb-10">
-        <span className="kicker">Setup</span>
+        <span className="kicker">{STEP_LABELS[step]}</span>
         <h1 className="mt-3 text-[34px] font-semibold leading-[1.47] tracking-[-0.374px]">
-          Set up your firm
+          Set up your investment workspace
         </h1>
         <p className="mt-2 text-[17px] leading-[1.47] tracking-[-0.374px] text-muted-foreground">
-          We'll use this to personalize deal screening. Step {step + 1} of 4.
+          A few quick questions so we can personalize deal screening. Step{' '}
+          {step + 1} of {STEPS.length}.
         </p>
       </div>
 
-      {step === 0 && (
-        <div className="space-y-6">
-          <div>
-            <Label htmlFor="firmName" className="text-xs font-semibold tracking-[-0.224px]">
-              Firm name
-            </Label>
-            <Input
-              id="firmName"
-              className="mt-2"
-              placeholder="Acme Capital"
-              value={form.firmName}
-              onChange={(e) => setForm({ ...form, firmName: e.target.value })}
-            />
-          </div>
-          <div>
-            <Label htmlFor="website" className="text-xs font-semibold tracking-[-0.224px]">
-              Website
-            </Label>
-            <Input
-              id="website"
-              className="mt-2"
-              placeholder="https://acme.com"
-              value={form.website}
-              onChange={(e) => setForm({ ...form, website: e.target.value })}
-            />
-          </div>
-          <div className="flex items-center gap-3 rounded-lg border border-hairline bg-card p-4">
-            {session?.user.image ? (
-              <img
-                src={session.user.image}
-                alt=""
-                className="size-10 rounded-full object-cover"
-              />
-            ) : (
-              <span className="flex size-10 items-center justify-center rounded-full bg-muted font-semibold">
-                {(session?.user.name ?? 'U').charAt(0).toUpperCase()}
-              </span>
-            )}
-            <div>
-              <p className="text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
-                {session?.user.name}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {session?.user.email}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {step === 1 && (
-        <div className="space-y-8">
-          <div>
-            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
-              Where do you invest?
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {GEOGRAPHIES.map((geo) => (
-                <Label
-                  key={geo}
-                  className={`flex cursor-pointer items-center gap-2.5 rounded-full border border-hairline bg-card px-5 py-2.5 text-sm transition-colors ${
-                    form.geography.includes(geo)
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'hover:border-ink-48'
-                  }`}
-                >
-                  <Checkbox
-                    checked={form.geography.includes(geo)}
-                    onCheckedChange={() => toggle('geography', geo)}
-                  />
-                  {geo}
-                </Label>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
-              Investment type
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {INVESTMENT_TYPES.map((type) => (
-                <Label
-                  key={type}
-                  className={`flex cursor-pointer items-center gap-2.5 rounded-full border border-hairline bg-card px-5 py-2.5 text-sm transition-colors ${
-                    form.investmentTypes.includes(type)
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'hover:border-ink-48'
-                  }`}
-                >
-                  <Checkbox
-                    checked={form.investmentTypes.includes(type)}
-                    onCheckedChange={() => toggle('investmentTypes', type)}
-                  />
-                  {type}
-                </Label>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
-              Revenue range (USD)
-            </p>
-            <div className="flex items-center gap-3">
-              <Input
-                type="number"
-                placeholder="Min"
-                value={form.minRevenue}
-                onChange={(e) =>
-                  setForm({ ...form, minRevenue: e.target.value })
-                }
-              />
-              <span className="text-muted-foreground">–</span>
-              <Input
-                type="number"
-                placeholder="Max"
-                value={form.maxRevenue}
-                onChange={(e) =>
-                  setForm({ ...form, maxRevenue: e.target.value })
-                }
-              />
-            </div>
-          </div>
-          <div>
-            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
-              EBITDA range (USD)
-            </p>
-            <div className="flex items-center gap-3">
-              <Input
-                type="number"
-                placeholder="Min"
-                value={form.minEbitda}
-                onChange={(e) =>
-                  setForm({ ...form, minEbitda: e.target.value })
-                }
-              />
-              <span className="text-muted-foreground">–</span>
-              <Input
-                type="number"
-                placeholder="Max"
-                value={form.maxEbitda}
-                onChange={(e) =>
-                  setForm({ ...form, maxEbitda: e.target.value })
-                }
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="space-y-8">
-          <div>
-            <p className="mb-3 text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
-              Preferred sectors
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {SECTORS.map((sector) => (
-                <Label
-                  key={sector}
-                  className={`flex cursor-pointer items-center gap-2.5 rounded-full border border-hairline bg-card px-5 py-2.5 text-sm transition-colors ${
-                    form.preferredSectors.includes(sector)
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'hover:border-ink-48'
-                  }`}
-                >
-                  <Checkbox
-                    checked={form.preferredSectors.includes(sector)}
-                    onCheckedChange={() => toggle('preferredSectors', sector)}
-                  />
-                  {sector}
-                </Label>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="mb-3 text-sm text-muted-foreground">
-              Sectors you explicitly avoid (optional)
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {SECTORS.map((sector) => (
-                <Label
-                  key={sector}
-                  className={`flex cursor-pointer items-center gap-2.5 rounded-full border border-hairline bg-card px-5 py-2.5 text-sm transition-colors ${
-                    form.excludedSectors.includes(sector)
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'hover:border-ink-48'
-                  }`}
-                >
-                  <Checkbox
-                    checked={form.excludedSectors.includes(sector)}
-                    onCheckedChange={() => toggle('excludedSectors', sector)}
-                  />
-                  {sector}
-                </Label>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="space-y-6">
-          <p className="text-[17px] font-semibold leading-[1.24] tracking-[-0.374px]">
-            What makes a company attractive to you?
-          </p>
-          <div className="space-y-3">
-            {CRITERIA.map((criterion) => {
-              const value = form.criteria[criterion] ?? 'neutral'
-              return (
-                <div
-                  key={criterion}
-                  className="flex items-center justify-between rounded-lg border border-hairline bg-card px-5 py-3"
-                >
-                  <span className="text-[17px] leading-[1.47] tracking-[-0.374px]">
-                    {criterion}
-                  </span>
-                  <div className="flex gap-2">
-                    {(['required', 'preferred', 'neutral'] as const).map(
-                      (option) => (
-                        <Button
-                          key={option}
-                          type="button"
-                          size="sm"
-                          variant={value === option ? 'default' : 'outline'}
-                          onClick={() => setCriterion(criterion, option)}
-                        >
-                          {option}
-                        </Button>
-                      ),
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-          <div className="rounded-lg border border-dashed border-hairline p-6 text-center">
-            <p className="text-sm text-muted-foreground">
-              Already have an investment criteria document? You'll be able to
-              upload it later.
-            </p>
-          </div>
-        </div>
-      )}
+      <StepComponent form={form} onChange={patch} />
 
       {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
@@ -374,26 +220,18 @@ export function OnboardingWizard({
         <Button
           type="button"
           variant="ghost"
-          onClick={() => goToStep(Math.max(0, step - 1))}
-          disabled={step === 0}
+          onClick={handleBack}
+          disabled={step === 0 || submitting}
         >
           Back
         </Button>
-        {step < 3 ? (
-          <Button
-            type="button"
-            onClick={() => goToStep(step + 1)}
-            disabled={!canContinue()}
-          >
+        {step < STEPS.length - 1 ? (
+          <Button type="button" onClick={handleContinue}>
             Continue
           </Button>
         ) : (
-          <Button
-            type="button"
-            onClick={() => void submit()}
-            disabled={submitting}
-          >
-            {submitting ? 'Saving...' : 'Finish'}
+          <Button type="button" onClick={() => void submit()} disabled={submitting}>
+            {submitting ? 'Setting up…' : 'Complete setup'}
           </Button>
         )}
       </div>

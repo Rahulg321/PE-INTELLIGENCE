@@ -1,5 +1,6 @@
 export * from "./auth";
-export * from "./firms";
+export * from "./workspaces";
+export * from "./companies";
 export * from "./deals";
 export * from "./onboarding-drafts";
 export * from "./relations";

@@ -28,21 +28,25 @@ function OnboardingRoute() {
   return (
     <div className="grid min-h-screen bg-canvas lg:grid-cols-2">
       <BrandPanel
-        title="Set up your firm"
-        subtitle="Tell us how you invest so we can screen deals that fit your mandate."
+        title="Set up your investment workspace"
+        subtitle="Tell us what your firm looks to invest in so we can screen deals that fit your mandate."
       >
         <ul className="space-y-3 text-sm text-muted-on-dark">
           <li className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-primary" />
-            Firm basics
+            Create your workspace
           </li>
           <li className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-primary" />
-            Strategy, geography &amp; sectors
+            Investment strategy
           </li>
           <li className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-primary" />
-            Investment criteria
+            Target sectors
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-primary" />
+            Investment preferences
           </li>
         </ul>
       </BrandPanel>

@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { LayoutDashboard, ListOrdered, LogOut } from 'lucide-react'
+import { LayoutDashboard, LogOut } from 'lucide-react'
 import { authClient } from '#/features/auth/client'
 import {
   Sidebar,
@@ -16,7 +16,6 @@ import {
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/deals', label: 'Deals', icon: ListOrdered },
 ] as const
 
 export function AppSidebar() {

@@ -1,14 +1,15 @@
-import { pgTable, text, timestamp, integer, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 
-export const firms = pgTable(
-    "firms",
+export const workspaces = pgTable(
+    "workspaces",
     {
         id: text("id").primaryKey(),
         ownerUserId: text("owner_user_id")
             .notNull()
             .references(() => users.id, { onDelete: "cascade" }),
         name: text("name").notNull(),
+        slug: text("slug").notNull().unique(),
         website: text("website"),
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at")
@@ -16,17 +17,18 @@ export const firms = pgTable(
             .$onUpdate(() => new Date())
             .notNull(),
     },
-    (table) => [index("firms_ownerUserId_idx").on(table.ownerUserId)],
+    (table) => [index("workspaces_ownerUserId_idx").on(table.ownerUserId)],
 );
 
 export const investmentMandates = pgTable(
     "investment_mandates",
     {
         id: text("id").primaryKey(),
-        firmId: text("firm_id")
+        workspaceId: text("workspace_id")
             .notNull()
-            .references(() => firms.id, { onDelete: "cascade" }),
-        geography: text("geography").array().notNull().default([]),
+            .references(() => workspaces.id, { onDelete: "cascade" }),
+        primaryGeography: text("primary_geography"),
+        targetGeographies: text("target_geographies").array().notNull().default([]),
         investmentTypes: text("investment_types").array().notNull().default([]),
         minRevenue: integer("min_revenue"),
         maxRevenue: integer("max_revenue"),
@@ -39,7 +41,7 @@ export const investmentMandates = pgTable(
             .$onUpdate(() => new Date())
             .notNull(),
     },
-    (table) => [index("investment_mandates_firmId_idx").on(table.firmId)],
+    (table) => [uniqueIndex("investment_mandates_workspaceId_idx").on(table.workspaceId)],
 );
 
 export const mandateSectors = pgTable(
@@ -63,7 +65,7 @@ export const mandateCriteria = pgTable(
             .notNull()
             .references(() => investmentMandates.id, { onDelete: "cascade" }),
         criterion: text("criterion").notNull(),
-        importance: text("importance", { enum: ["required", "preferred", "neutral"] }).notNull(),
+        importance: text("importance", { enum: ["required", "preferred", "neutral", "dealbreaker"] }).notNull(),
     },
     (table) => [index("mandate_criteria_mandateId_idx").on(table.mandateId)],
 );

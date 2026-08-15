@@ -1,10 +1,17 @@
-export const GEOGRAPHIES = ['United States', 'Canada', 'Europe', 'Other']
+export const GEOGRAPHIES = [
+  'United States',
+  'Canada',
+  'Europe',
+  'United Kingdom',
+  'Asia-Pacific',
+  'Other',
+]
 
 export const INVESTMENT_TYPES = [
   'Control / Majority',
   'Minority',
-  'Growth',
   'Buyout',
+  'Growth',
   'Special Situations',
 ]
 
@@ -21,15 +28,25 @@ export const SECTORS = [
 ]
 
 export const CRITERIA = [
-  'Recurring revenue',
   'Stable earnings',
+  'Stable growth drivers',
+  'Recurring / predictable revenue',
   'Pricing power',
-  'Customer concentration',
-  'Market fragmentation',
-  'Cyclicality',
-  'Disruption risk',
-  'Growth potential',
-  'Competitive advantage',
+  'Low customer concentration',
+  'Fragmented market',
+  'Limited cyclicality',
+  'Low disruption risk',
+  'Multiple growth levers',
+  'Strong competitive position',
 ]
 
-export type CriterionImportance = 'required' | 'preferred' | 'neutral'
+export const DEAL_BREAKERS = [
+  'EBITDA below minimum',
+  'Outside target geography',
+  'Highly concentrated customer base',
+  'Highly cyclical business',
+  'Significant regulatory risk',
+  'Significant disruption risk',
+]
+
+export type CriterionImportance = 'preferred' | 'required'

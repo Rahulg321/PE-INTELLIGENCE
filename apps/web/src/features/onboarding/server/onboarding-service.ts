@@ -1,7 +1,7 @@
-import { eq } from 'drizzle-orm'
+import { and, eq, ne } from 'drizzle-orm'
 import {
   db,
-  firms,
+  workspaces,
   investmentMandates,
   mandateSectors,
   mandateCriteria,
@@ -11,13 +11,38 @@ import type { OnboardingOutput, OnboardingDraft, OnboardingDraftData } from '../
 
 const randomId = () => crypto.randomUUID()
 
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'workspace'
+
+async function uniqueSlug(base: string, excludeId?: string) {
+  const slug = slugify(base)
+  let candidate = slug
+  for (;;) {
+    const rows = await db
+      .select({ id: workspaces.id })
+      .from(workspaces)
+      .where(
+        excludeId
+          ? and(eq(workspaces.slug, candidate), ne(workspaces.id, excludeId))
+          : eq(workspaces.slug, candidate),
+      )
+      .limit(1)
+    if (rows.length === 0) return candidate
+    candidate = `${slug}-${Math.random().toString(36).slice(2, 6)}`
+  }
+}
+
 export const onboardingService = {
   async getStatus(userId: string) {
-    const firm = await db.query.firms.findFirst({
+    const workspace = await db.query.workspaces.findFirst({
       where: { ownerUserId: userId },
       columns: { id: true },
     })
-    return { onboarded: Boolean(firm) }
+    return { onboarded: Boolean(workspace) }
   },
 
   async getDraft(userId: string): Promise<OnboardingDraft | null> {
@@ -48,38 +73,61 @@ export const onboardingService = {
   },
 
   async save(userId: string, data: OnboardingOutput) {
-    const existing = await db.query.firms.findFirst({
-      where: { ownerUserId: userId },
-      columns: { id: true },
-    })
-    if (existing) {
-      return { firmId: existing.id, alreadyOnboarded: true }
-    }
-
-    const firmId = randomId()
-    const mandateId = randomId()
-
-    await db.transaction(async (tx) => {
-      await tx.insert(firms).values({
-        id: firmId,
-        ownerUserId: userId,
-        name: data.firmName,
-        website: data.website || null,
+    const result = await db.transaction(async (tx) => {
+      const existingWorkspace = await tx.query.workspaces.findFirst({
+        where: { ownerUserId: userId },
+        columns: { id: true },
       })
+
+      const workspaceId = existingWorkspace?.id ?? randomId()
+      const slug = await uniqueSlug(data.firmName, existingWorkspace?.id)
+
+      await tx
+        .insert(workspaces)
+        .values({
+          id: workspaceId,
+          ownerUserId: userId,
+          name: data.firmName,
+          slug,
+          website: data.website || null,
+        })
+        .onConflictDoUpdate({
+          target: workspaces.id,
+          set: { name: data.firmName, slug, website: data.website || null },
+        })
+
+      const existingMandate = await tx.query.investmentMandates.findFirst({
+        where: { workspaceId },
+        columns: { id: true },
+      })
+      const mandateId = existingMandate?.id ?? randomId()
 
       await tx
         .insert(investmentMandates)
         .values({
-        id: mandateId,
-        firmId,
-        geography: data.geography,
-        investmentTypes: data.investmentTypes,
-        minRevenue: data.minRevenue ?? null,
-        maxRevenue: data.maxRevenue ?? null,
-        minEbitda: data.minEbitda ?? null,
-        maxEbitda: data.maxEbitda ?? null,
-        version: 1,
-      })
+          id: mandateId,
+          workspaceId,
+          primaryGeography: data.geography[0] ?? null,
+          targetGeographies: data.geography,
+          investmentTypes: data.investmentTypes,
+          minRevenue: data.minRevenue ?? null,
+          maxRevenue: data.maxRevenue ?? null,
+          minEbitda: data.minEbitda,
+          maxEbitda: data.maxEbitda ?? null,
+          version: 1,
+        })
+        .onConflictDoUpdate({
+          target: investmentMandates.id,
+          set: {
+            primaryGeography: data.geography[0] ?? null,
+            targetGeographies: data.geography,
+            investmentTypes: data.investmentTypes,
+            minRevenue: data.minRevenue ?? null,
+            maxRevenue: data.maxRevenue ?? null,
+            minEbitda: data.minEbitda,
+            maxEbitda: data.maxEbitda ?? null,
+          },
+        })
 
       const sectors = [
         ...data.preferredSectors.map((sector) => ({
@@ -91,6 +139,7 @@ export const onboardingService = {
           type: 'excluded' as const,
         })),
       ]
+      await tx.delete(mandateSectors).where(eq(mandateSectors.mandateId, mandateId))
       if (sectors.length > 0) {
         await tx.insert(mandateSectors).values(
           sectors.map(({ sector, type }) => ({
@@ -102,10 +151,20 @@ export const onboardingService = {
         )
       }
 
-      const criteria = Object.entries(data.criteria)
+      const criteria = [
+        ...Object.entries(data.criteria).map(([criterion, importance]) => ({
+          criterion,
+          importance,
+        })),
+        ...data.dealbreakers.map((criterion) => ({
+          criterion,
+          importance: 'dealbreaker' as const,
+        })),
+      ]
+      await tx.delete(mandateCriteria).where(eq(mandateCriteria.mandateId, mandateId))
       if (criteria.length > 0) {
         await tx.insert(mandateCriteria).values(
-          criteria.map(([criterion, importance]) => ({
+          criteria.map(({ criterion, importance }) => ({
             id: randomId(),
             mandateId,
             criterion,
@@ -113,10 +172,12 @@ export const onboardingService = {
           })),
         )
       }
+
+      return { workspaceId, mandateId, alreadyOnboarded: Boolean(existingWorkspace) }
     })
 
     await this.clearDraft(userId)
 
-    return { firmId, mandateId }
+    return result
   },
 }

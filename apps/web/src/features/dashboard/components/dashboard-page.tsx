@@ -29,7 +29,15 @@ export function DashboardPage({ data }: { data: DashboardData }) {
             <dl className="mt-2 space-y-2.5 text-sm">
               <div className="flex gap-2">
                 <dt className="w-32 text-muted-foreground">Geography</dt>
-                <dd>{mandate.geography.join(', ')}</dd>
+                <dd>
+                  {mandate.primaryGeography ?? ''}
+                  {mandate.primaryGeography && mandate.targetGeographies.length > 0
+                    ? ' · '
+                    : ''}
+                  {mandate.targetGeographies
+                    .filter((geo) => geo !== mandate.primaryGeography)
+                    .join(', ')}
+                </dd>
               </div>
               <div className="flex gap-2">
                 <dt className="w-32 text-muted-foreground">Investment type</dt>
