@@ -5,11 +5,14 @@ import {
   useRouter,
 } from '@tanstack/react-router'
 import {
+  Building2,
   Check,
   ChevronsUpDown,
+  Handshake,
   LayoutDashboard,
   LogOut,
   Plus,
+  Users,
 } from 'lucide-react'
 import { authClient } from '#/features/auth/client'
 import { setActiveWorkspace } from '#/features/workspaces/server/mutations/set-active-workspace'
@@ -36,6 +39,9 @@ import {
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/deals', label: 'Deals', icon: Handshake },
+  { to: '/companies', label: 'Companies', icon: Building2 },
+  { to: '/contacts', label: 'Contacts', icon: Users },
 ] as const
 
 type WorkspaceSummary = { id: string; name: string; slug: string }

@@ -15,7 +15,10 @@ import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
+import { Route as DashboardCompaniesRouteImport } from './routes/_dashboard/companies'
+import { Route as DashboardContactsRouteImport } from './routes/_dashboard/contacts'
 import { Route as DashboardDashboardRouteImport } from './routes/_dashboard/dashboard'
+import { Route as DashboardDealsRouteImport } from './routes/_dashboard/deals'
 import { Route as OnboardingOnboardingRouteImport } from './routes/_onboarding/onboarding'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -47,9 +50,24 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => AuthRoute,
 } as any)
+const DashboardCompaniesRoute = DashboardCompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardContactsRoute = DashboardContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardDashboardRoute = DashboardDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDealsRoute = DashboardDealsRouteImport.update({
+  id: '/deals',
+  path: '/deals',
   getParentRoute: () => DashboardRoute,
 } as any)
 const OnboardingOnboardingRoute = OnboardingOnboardingRouteImport.update({
@@ -68,7 +86,10 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
+  '/companies': typeof DashboardCompaniesRoute
+  '/contacts': typeof DashboardContactsRoute
   '/dashboard': typeof DashboardDashboardRoute
+  '/deals': typeof DashboardDealsRoute
   '/onboarding': typeof OnboardingOnboardingRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -77,7 +98,10 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
+  '/companies': typeof DashboardCompaniesRoute
+  '/contacts': typeof DashboardContactsRoute
   '/dashboard': typeof DashboardDashboardRoute
+  '/deals': typeof DashboardDealsRoute
   '/onboarding': typeof OnboardingOnboardingRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -89,7 +113,10 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
+  '/_dashboard/companies': typeof DashboardCompaniesRoute
+  '/_dashboard/contacts': typeof DashboardContactsRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
+  '/_dashboard/deals': typeof DashboardDealsRoute
   '/_onboarding/onboarding': typeof OnboardingOnboardingRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -100,7 +127,10 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/login'
     | '/signup'
+    | '/companies'
+    | '/contacts'
     | '/dashboard'
+    | '/deals'
     | '/onboarding'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -109,7 +139,10 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/login'
     | '/signup'
+    | '/companies'
+    | '/contacts'
     | '/dashboard'
+    | '/deals'
     | '/onboarding'
     | '/api/auth/$'
   id:
@@ -120,7 +153,10 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/_auth/login'
     | '/_auth/signup'
+    | '/_dashboard/companies'
+    | '/_dashboard/contacts'
     | '/_dashboard/dashboard'
+    | '/_dashboard/deals'
     | '/_onboarding/onboarding'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -178,11 +214,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_dashboard/companies': {
+      id: '/_dashboard/companies'
+      path: '/companies'
+      fullPath: '/companies'
+      preLoaderRoute: typeof DashboardCompaniesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/contacts': {
+      id: '/_dashboard/contacts'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof DashboardContactsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/dashboard': {
       id: '/_dashboard/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardDashboardRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/deals': {
+      id: '/_dashboard/deals'
+      path: '/deals'
+      fullPath: '/deals'
+      preLoaderRoute: typeof DashboardDealsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/_onboarding/onboarding': {
@@ -215,11 +272,17 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface DashboardRouteChildren {
+  DashboardCompaniesRoute: typeof DashboardCompaniesRoute
+  DashboardContactsRoute: typeof DashboardContactsRoute
   DashboardDashboardRoute: typeof DashboardDashboardRoute
+  DashboardDealsRoute: typeof DashboardDealsRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardCompaniesRoute: DashboardCompaniesRoute,
+  DashboardContactsRoute: DashboardContactsRoute,
   DashboardDashboardRoute: DashboardDashboardRoute,
+  DashboardDealsRoute: DashboardDealsRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
