@@ -1,8 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
-export function parseEnv(source: string): Record<string, string> {
-  const result: Record<string, string> = {};
+/** Key/value pairs owned by a dotenv file: every declared key maps to its literal string value. */
+export interface EnvFileValues {
+  [key: string]: string;
+}
+
+export function parseEnv(source: string): EnvFileValues {
+  const result: EnvFileValues = {};
   for (const rawLine of source.split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line || line.startsWith("#")) continue;
@@ -31,6 +36,11 @@ export function parseEnv(source: string): Record<string, string> {
 
 const KEY_PATTERN = /^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/;
 
+/** The only `package.json` field this module reads: its presence as an array marks a workspace root. */
+interface PackageManifest {
+  readonly workspaces?: unknown;
+}
+
 export function findWorkspaceRoot(start: string): string | null {
   let dir = resolve(start);
   for (;;) {
@@ -38,7 +48,10 @@ export function findWorkspaceRoot(start: string): string | null {
     let isWorkspace = false;
     if (existsSync(pkgPath)) {
       try {
-        const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as { workspaces?: unknown };
+        // SAFETY: `JSON.parse` yields `any` for an unvalidated file. `PackageManifest`
+        // narrows it to a single optional field left as `unknown`, so the only read
+        // below still has to prove its own shape via `Array.isArray`.
+        const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as PackageManifest;
         isWorkspace = Array.isArray(pkg.workspaces);
       } catch {
         // ignore malformed package.json
@@ -58,7 +71,7 @@ export function loadRootEnv(): void {
   loaded = true;
   const root = findWorkspaceRoot(process.cwd());
   if (!root) return;
-  const merged: Record<string, string> = {};
+  const merged: EnvFileValues = {};
   for (const filename of [".env", ".env.local"]) {
     const filePath = join(root, filename);
     if (!existsSync(filePath)) continue;

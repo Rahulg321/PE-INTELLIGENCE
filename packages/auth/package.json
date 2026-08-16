@@ -27,7 +27,7 @@
     "@repo/env": "workspace:*",
     "better-auth": "^1.5.3",
     "db": "workspace:*",
-    "drizzle-orm": "^1.0.0-rc.4"
+    "drizzle-orm": "1.0.0-rc.4"
   },
   "devDependencies": {
     "@better-auth/cli": "latest",

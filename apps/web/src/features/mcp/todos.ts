@@ -7,7 +7,7 @@ export type Todo = {
   title: string
 }
 
-const isServer = () => typeof window === 'undefined'
+const isServer = () => import.meta.env.SSR
 
 const loadTodos = async (): Promise<Todo[]> => {
   if (todos !== null) return todos

@@ -7,7 +7,8 @@ import {
   mandateCriteria,
   onboardingDrafts,
 } from 'db'
-import type { OnboardingOutput, OnboardingDraft, OnboardingDraftData } from '../schemas'
+import { onboardingDraftDataSchema } from '../schemas'
+import type { OnboardingOutput, OnboardingDraft } from '../schemas'
 
 const randomId = () => crypto.randomUUID()
 
@@ -47,7 +48,7 @@ export const onboardingService = {
     })
     if (!draft) return null
     return {
-      data: draft.data as OnboardingDraftData,
+      data: onboardingDraftDataSchema.parse(draft.data),
       step: draft.step,
     }
   },

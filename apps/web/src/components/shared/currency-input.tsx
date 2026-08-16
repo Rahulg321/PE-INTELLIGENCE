@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, type ComponentProps } from 'react'
+import { useLayoutEffect, useRef  } from 'react'
+import type {ComponentProps} from 'react';
 import { Input } from '#/components/ui/input'
 import { formatUsdInteger, parseUsdDigits } from '#/lib/format-money'
 

@@ -12,16 +12,14 @@ export async function runBrandLane(task: AgentTask): Promise<string> {
 
     const look = await lookupBrand(company.website);
 
-    await db
-        .update(companies)
-        .set({
-            ...(look.legalName ? { legalName: look.legalName } : {}),
-            ...(look.industry ? { industry: look.industry } : {}),
-            ...(look.linkedinUrl ? { linkedinUrl: look.linkedinUrl } : {}),
-            ...(look.logoUrl ? { logoUrl: look.logoUrl } : {}),
-            ...(look.iconUrl ? { iconUrl: look.iconUrl } : {}),
-        })
-        .where(eq(companies.id, task.entityId));
+    const updates: Partial<typeof companies.$inferInsert> = {};
+    if (look.legalName) updates.legalName = look.legalName;
+    if (look.industry) updates.industry = look.industry;
+    if (look.linkedinUrl) updates.linkedinUrl = look.linkedinUrl;
+    if (look.logoUrl) updates.logoUrl = look.logoUrl;
+    if (look.iconUrl) updates.iconUrl = look.iconUrl;
+
+    await db.update(companies).set(updates).where(eq(companies.id, task.entityId));
 
     return look.logoUrl ? "logo resolved" : "no brand data found";
 }

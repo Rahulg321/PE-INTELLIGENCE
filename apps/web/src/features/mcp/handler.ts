@@ -1,4 +1,5 @@
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
+import { JSONRPCMessageSchema } from '@modelcontextprotocol/sdk/types.js'
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
@@ -8,7 +9,7 @@ export async function handleMcpRequest(
   server: McpServer,
 ): Promise<Response> {
   try {
-    const jsonRpcRequest = (await request.json()) as JSONRPCMessage
+    const jsonRpcRequest = JSONRPCMessageSchema.parse(await request.json())
 
     const [clientTransport, serverTransport] =
       InMemoryTransport.createLinkedPair()

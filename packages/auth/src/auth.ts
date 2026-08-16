@@ -12,6 +12,18 @@ import { cookiePrefix } from "./cookies";
 import { env, isGoogleConfigured } from "./env";
 import { notifySignedIn } from "./signed-in";
 
+const advanced: NonNullable<BetterAuthOptions["advanced"]> = {
+  cookiePrefix,
+  useSecureCookies: env.isProduction,
+};
+
+if (env.cookieDomain !== undefined) {
+  advanced.crossSubDomainCookies = {
+    enabled: true,
+    domain: env.cookieDomain,
+  };
+}
+
 export const authOptions: BetterAuthOptions = {
   secret: env.secret,
   baseURL: env.apiUrl,
@@ -45,18 +57,7 @@ export const authOptions: BetterAuthOptions = {
     enabled: true,
     storage: "database",
   },
-  advanced: {
-    cookiePrefix,
-    useSecureCookies: env.isProduction,
-    ...(env.cookieDomain
-      ? {
-          crossSubDomainCookies: {
-            enabled: true,
-            domain: env.cookieDomain,
-          },
-        }
-      : {}),
-  },
+  advanced,
   trustedOrigins: env.trustedOrigins,
   socialProviders: isGoogleConfigured()
     ? {

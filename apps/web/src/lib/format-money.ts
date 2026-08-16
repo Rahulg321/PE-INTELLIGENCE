@@ -7,12 +7,9 @@ export function parseUsdDigits(value: string): string {
   return value.replace(/\D/g, '')
 }
 
-/** Format a digit string or integer as US grouped dollars, e.g. `3000000` → `"3,000,000"`. */
-export function formatUsdInteger(value: string | number): string {
-  const digits =
-    typeof value === 'number'
-      ? String(Math.trunc(Math.abs(value)))
-      : parseUsdDigits(value)
+/** Format a digit string as US grouped dollars, e.g. `"3000000"` → `"3,000,000"`. */
+export function formatUsdInteger(value: string): string {
+  const digits = parseUsdDigits(value)
   if (digits === '') return ''
   return usdInteger.format(BigInt(digits))
 }

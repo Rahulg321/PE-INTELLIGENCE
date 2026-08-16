@@ -35,7 +35,7 @@ async function process(task: AgentTask, lane: Lane) {
         const outcome = await lane(task);
         await completeTask(task, outcome);
     } catch (error) {
-        await failTask(task, error);
+        await failTask(task, error instanceof Error ? error.message : String(error));
     }
 }
 
@@ -47,9 +47,7 @@ async function completeTask(task: AgentTask, outcome: string) {
     await markCompanyDoneIfIdle(task);
 }
 
-async function failTask(task: AgentTask, error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-
+async function failTask(task: AgentTask, message: string) {
     if (task.attempts < 3) {
         await db
             .update(agentTasks)

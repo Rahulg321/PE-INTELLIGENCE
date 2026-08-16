@@ -7,7 +7,7 @@ export const workspacesService = {
     const workspaces = await db.query.workspaces.findMany({
       where: { ownerUserId: userId },
       columns: { id: true, name: true, slug: true },
-      orderBy: (table, { asc }) => [asc(table.createdAt)],
+      orderBy: { createdAt: 'asc' },
     })
 
     const cookieId = getCookie(ACTIVE_WORKSPACE_COOKIE)

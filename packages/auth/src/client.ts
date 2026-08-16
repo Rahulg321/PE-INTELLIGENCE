@@ -1,8 +1,11 @@
 import { createAuthClient } from "better-auth/react";
 import { cookiePrefix } from "./cookies";
 
+/** Absent when this module is evaluated outside a browser (SSR/build), where the client falls back to a relative baseURL. */
+const browserWindow: Window | undefined = globalThis.window;
+
 export const authClient = createAuthClient({
-  baseURL: typeof window !== "undefined" ? window.location.origin : undefined,
+  baseURL: browserWindow?.location.origin,
   cookiePrefix,
 });
 

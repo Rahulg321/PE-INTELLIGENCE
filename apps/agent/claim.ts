@@ -1,5 +1,6 @@
 import { db } from "db";
 import { sql } from "drizzle-orm";
+import { z } from "zod";
 
 export type AgentTask = {
     id: string;
@@ -18,22 +19,26 @@ export type AgentTask = {
     outcome: string | null;
 };
 
-type AgentTaskRow = {
-    id: string;
-    workspace_id: string;
-    kind: string;
-    entity_type: string;
-    entity_id: string;
-    reason: string | null;
-    priority: number;
-    budget: number;
-    due_at: Date;
-    leased_until: Date | null;
-    started_at: Date | null;
-    attempts: number;
-    finished_at: Date | null;
-    outcome: string | null;
-};
+const agentTaskRowSchema = z.object({
+    id: z.string(),
+    workspace_id: z.string(),
+    kind: z.string(),
+    entity_type: z.string(),
+    entity_id: z.string(),
+    reason: z.string().nullable(),
+    priority: z.number(),
+    budget: z.number(),
+    due_at: z.date(),
+    leased_until: z.date().nullable(),
+    started_at: z.date().nullable(),
+    attempts: z.number(),
+    finished_at: z.date().nullable(),
+    outcome: z.string().nullable(),
+});
+
+const agentTaskRowsSchema = z.array(agentTaskRowSchema);
+
+type AgentTaskRow = z.infer<typeof agentTaskRowSchema>;
 
 function mapTask(row: AgentTaskRow): AgentTask {
     return {
@@ -88,6 +93,5 @@ export async function claimDue(limit = 12): Promise<AgentTask[]> {
             t.finished_at,
             t.outcome
     `);
-    const rows = (result.rows ?? []) as unknown as AgentTaskRow[];
-    return rows.map(mapTask);
+    return agentTaskRowsSchema.parse(result.rows ?? []).map(mapTask);
 }

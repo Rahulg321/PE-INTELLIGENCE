@@ -1,4 +1,3 @@
-import { and, eq, isNull } from 'drizzle-orm'
 import { agentTasks, companies, db } from 'db'
 import { workspacesService } from '#/features/workspaces/server/workspaces-service'
 import { AGENT_KIND, AGENT_PRIORITY } from '../constants'
@@ -6,6 +5,8 @@ import type { CreateCompanyInput } from '../schemas'
 
 const AGENT_URL = process.env.AGENT_URL ?? 'http://localhost:4000'
 const randomId = () => crypto.randomUUID()
+
+const CLOSED_DEAL_STATUSES = new Set(['PASSED', 'LOST', 'WON'])
 
 async function enqueueTask(input: {
   workspaceId: string
@@ -30,7 +31,9 @@ async function enqueueTask(input: {
 }
 
 function pokeAgent() {
-  void fetch(`${AGENT_URL}/internal/crm/dispatch`, { method: 'POST' }).catch(() => {})
+  void fetch(`${AGENT_URL}/internal/crm/dispatch`, { method: 'POST' }).catch(
+    () => {},
+  )
 }
 
 export const companiesService = {
@@ -73,7 +76,8 @@ export const companiesService = {
   async list(userId: string) {
     const { activeWorkspaceId } = await workspacesService.list(userId)
     if (!activeWorkspaceId) return []
-    return db.query.companies.findMany({
+
+    const rows = await db.query.companies.findMany({
       where: { workspaceId: activeWorkspaceId },
       columns: {
         id: true,
@@ -88,8 +92,24 @@ export const companiesService = {
         headquartersCountry: true,
         enrichmentStatus: true,
         createdAt: true,
+        updatedAt: true,
       },
-      orderBy: (table, { desc }) => [desc(table.createdAt)],
+      with: {
+        contacts: { columns: { id: true } },
+        deals: { columns: { id: true, status: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return rows.map((row) => {
+      const { contacts, deals, ...company } = row
+      return {
+        ...company,
+        contactCount: contacts.length,
+        openDealCount: deals.filter(
+          (deal) => !CLOSED_DEAL_STATUSES.has(deal.status),
+        ).length,
+      }
     })
   },
 
@@ -103,10 +123,13 @@ export const companiesService = {
     })
     if (!company) return null
 
-    const openTasks = await db
-      .select({ id: agentTasks.id, kind: agentTasks.kind, outcome: agentTasks.outcome })
-      .from(agentTasks)
-      .where(and(eq(agentTasks.entityId, companyId), isNull(agentTasks.finishedAt)))
+    const openTasks = await db.query.agentTasks.findMany({
+      where: {
+        entityId: companyId,
+        finishedAt: { isNull: true },
+      },
+      columns: { id: true, kind: true, outcome: true },
+    })
 
     return { company, enriching: openTasks.length > 0 }
   },

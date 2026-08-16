@@ -18,16 +18,16 @@ const FACT_FIELDS = [
 
 type FactField = (typeof FACT_FIELDS)[number];
 
-const FACT_SETTERS: Record<FactField, (value: string) => Partial<typeof companies.$inferInsert>> = {
-    industry: (value) => ({ industry: value }),
-    subIndustry: (value) => ({ subIndustry: value }),
-    headquartersCountry: (value) => ({ headquartersCountry: value }),
-    headquartersState: (value) => ({ headquartersState: value }),
-    headquartersCity: (value) => ({ headquartersCity: value }),
-    linkedinUrl: (value) => ({ linkedinUrl: value }),
-    phone: (value) => ({ phone: value }),
-    generalEmail: (value) => ({ generalEmail: value }),
-};
+const FACT_SETTERS = {
+    industry: (value: string) => ({ industry: value }),
+    subIndustry: (value: string) => ({ subIndustry: value }),
+    headquartersCountry: (value: string) => ({ headquartersCountry: value }),
+    headquartersState: (value: string) => ({ headquartersState: value }),
+    headquartersCity: (value: string) => ({ headquartersCity: value }),
+    linkedinUrl: (value: string) => ({ linkedinUrl: value }),
+    phone: (value: string) => ({ phone: value }),
+    generalEmail: (value: string) => ({ generalEmail: value }),
+} satisfies Record<FactField, (value: string) => Partial<typeof companies.$inferInsert>>;
 
 const randomId = () => crypto.randomUUID();
 

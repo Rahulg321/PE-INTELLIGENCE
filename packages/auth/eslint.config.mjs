@@ -10,12 +10,6 @@ export default [
     },
   },
   {
-    files: ["src/signed-in.ts"],
-    rules: {
-      "@typescript-eslint/no-explicit-any": "off",
-    },
-  },
-  {
     files: ["src/env.ts"],
     rules: {
       "turbo/no-undeclared-env-vars": "off",
