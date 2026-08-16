@@ -230,7 +230,11 @@ export function OnboardingWizard({
             Continue
           </Button>
         ) : (
-          <Button type="button" onClick={() => void submit()} disabled={submitting}>
+          <Button
+            type="button"
+            onClick={() => void submit()}
+            disabled={submitting}
+          >
             {submitting ? 'Setting up…' : 'Complete setup'}
           </Button>
         )}
