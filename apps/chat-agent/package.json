@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --watch index.ts",
+    "dev": "PORT=3001 bun --watch index.ts",
     "start": "bun index.ts",
     "test": "bun test",
     "check-types": "bunx tsc --noEmit"
