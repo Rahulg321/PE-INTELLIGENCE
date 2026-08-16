@@ -2,7 +2,6 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { BrandPanel } from '#/components/shared/brand-panel'
 import { OnboardingWizard } from '#/features/onboarding/components/onboarding-wizard'
 import { getSessionStatus } from '#/features/auth/server/queries/get-session-status'
-import { getOnboardingStatus } from '#/features/onboarding/server/queries/get-onboarding-status'
 import { getOnboardingDraft } from '#/features/onboarding/server/queries/get-onboarding-draft'
 import { onboardingSearchSchema } from '#/features/onboarding/schemas'
 
@@ -14,10 +13,6 @@ export const Route = createFileRoute('/_onboarding/onboarding')({
     const status = await getSessionStatus()
     if (!status.signedIn) {
       throw redirect({ to: '/login' })
-    }
-    const onboarding = await getOnboardingStatus()
-    if (onboarding.onboarded) {
-      throw redirect({ to: '/dashboard' })
     }
   },
 })

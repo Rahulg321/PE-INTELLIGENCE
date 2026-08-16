@@ -1,4 +1,4 @@
-import { Input } from '#/components/ui/input'
+import { CurrencyInput } from '#/components/shared/currency-input'
 import { Label } from '#/components/ui/label'
 import { GEOGRAPHIES, INVESTMENT_TYPES } from '../constants'
 import { ToggleChip } from './toggle-chip'
@@ -20,7 +20,7 @@ export function InvestmentStrategyStep({ form, onChange }: OnboardingStepProps) 
     key: 'minRevenue' | 'maxRevenue' | 'minEbitda' | 'maxEbitda',
     value: string,
   ) => {
-    onChange({ [key]: value.replace(/[^\d]/g, '') })
+    onChange({ [key]: value })
   }
 
   return (
@@ -67,20 +67,16 @@ export function InvestmentStrategyStep({ form, onChange }: OnboardingStepProps) 
               Revenue range (USD) <span className="font-normal text-muted-foreground">(optional)</span>
             </Label>
             <div className="flex items-center gap-3">
-              <Input
-                type="text"
-                inputMode="numeric"
+              <CurrencyInput
                 placeholder="Minimum"
                 value={form.minRevenue}
-                onChange={(e) => setRange('minRevenue', e.target.value)}
+                onValueChange={(digits) => setRange('minRevenue', digits)}
               />
               <span className="text-muted-foreground">–</span>
-              <Input
-                type="text"
-                inputMode="numeric"
+              <CurrencyInput
                 placeholder="Maximum"
                 value={form.maxRevenue}
-                onChange={(e) => setRange('maxRevenue', e.target.value)}
+                onValueChange={(digits) => setRange('maxRevenue', digits)}
               />
             </div>
           </div>
@@ -90,20 +86,16 @@ export function InvestmentStrategyStep({ form, onChange }: OnboardingStepProps) 
               EBITDA range (USD)
             </Label>
             <div className="flex items-center gap-3">
-              <Input
-                type="text"
-                inputMode="numeric"
+              <CurrencyInput
                 placeholder="Minimum"
                 value={form.minEbitda}
-                onChange={(e) => setRange('minEbitda', e.target.value)}
+                onValueChange={(digits) => setRange('minEbitda', digits)}
               />
               <span className="text-muted-foreground">–</span>
-              <Input
-                type="text"
-                inputMode="numeric"
+              <CurrencyInput
                 placeholder="Maximum"
                 value={form.maxEbitda}
-                onChange={(e) => setRange('maxEbitda', e.target.value)}
+                onValueChange={(digits) => setRange('maxEbitda', digits)}
               />
             </div>
           </div>

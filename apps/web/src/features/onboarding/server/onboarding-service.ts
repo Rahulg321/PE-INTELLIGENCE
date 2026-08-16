@@ -1,4 +1,4 @@
-import { and, eq, ne } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import {
   db,
   workspaces,
@@ -18,18 +18,14 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'workspace'
 
-async function uniqueSlug(base: string, excludeId?: string) {
+async function uniqueSlug(base: string) {
   const slug = slugify(base)
   let candidate = slug
   for (;;) {
     const rows = await db
       .select({ id: workspaces.id })
       .from(workspaces)
-      .where(
-        excludeId
-          ? and(eq(workspaces.slug, candidate), ne(workspaces.id, excludeId))
-          : eq(workspaces.slug, candidate),
-      )
+      .where(eq(workspaces.slug, candidate))
       .limit(1)
     if (rows.length === 0) return candidate
     candidate = `${slug}-${Math.random().toString(36).slice(2, 6)}`
@@ -74,60 +70,31 @@ export const onboardingService = {
 
   async save(userId: string, data: OnboardingOutput) {
     const result = await db.transaction(async (tx) => {
-      const existingWorkspace = await tx.query.workspaces.findFirst({
-        where: { ownerUserId: userId },
-        columns: { id: true },
+      const workspaceId = randomId()
+      const slug = await uniqueSlug(data.firmName)
+
+      await tx.insert(workspaces).values({
+        id: workspaceId,
+        ownerUserId: userId,
+        name: data.firmName,
+        slug,
+        website: data.website || null,
       })
 
-      const workspaceId = existingWorkspace?.id ?? randomId()
-      const slug = await uniqueSlug(data.firmName, existingWorkspace?.id)
+      const mandateId = randomId()
 
-      await tx
-        .insert(workspaces)
-        .values({
-          id: workspaceId,
-          ownerUserId: userId,
-          name: data.firmName,
-          slug,
-          website: data.website || null,
-        })
-        .onConflictDoUpdate({
-          target: workspaces.id,
-          set: { name: data.firmName, slug, website: data.website || null },
-        })
-
-      const existingMandate = await tx.query.investmentMandates.findFirst({
-        where: { workspaceId },
-        columns: { id: true },
+      await tx.insert(investmentMandates).values({
+        id: mandateId,
+        workspaceId,
+        primaryGeography: data.geography[0] ?? null,
+        targetGeographies: data.geography,
+        investmentTypes: data.investmentTypes,
+        minRevenue: data.minRevenue ?? null,
+        maxRevenue: data.maxRevenue ?? null,
+        minEbitda: data.minEbitda,
+        maxEbitda: data.maxEbitda ?? null,
+        version: 1,
       })
-      const mandateId = existingMandate?.id ?? randomId()
-
-      await tx
-        .insert(investmentMandates)
-        .values({
-          id: mandateId,
-          workspaceId,
-          primaryGeography: data.geography[0] ?? null,
-          targetGeographies: data.geography,
-          investmentTypes: data.investmentTypes,
-          minRevenue: data.minRevenue ?? null,
-          maxRevenue: data.maxRevenue ?? null,
-          minEbitda: data.minEbitda,
-          maxEbitda: data.maxEbitda ?? null,
-          version: 1,
-        })
-        .onConflictDoUpdate({
-          target: investmentMandates.id,
-          set: {
-            primaryGeography: data.geography[0] ?? null,
-            targetGeographies: data.geography,
-            investmentTypes: data.investmentTypes,
-            minRevenue: data.minRevenue ?? null,
-            maxRevenue: data.maxRevenue ?? null,
-            minEbitda: data.minEbitda,
-            maxEbitda: data.maxEbitda ?? null,
-          },
-        })
 
       const sectors = [
         ...data.preferredSectors.map((sector) => ({
@@ -173,7 +140,7 @@ export const onboardingService = {
         )
       }
 
-      return { workspaceId, mandateId, alreadyOnboarded: Boolean(existingWorkspace) }
+      return { workspaceId, mandateId }
     })
 
     await this.clearDraft(userId)

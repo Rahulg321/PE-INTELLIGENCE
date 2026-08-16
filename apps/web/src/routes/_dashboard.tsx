@@ -8,6 +8,7 @@ import {
 } from '#/components/ui/sidebar'
 import { getSessionStatus } from '#/features/auth/server/queries/get-session-status'
 import { getOnboardingStatus } from '#/features/onboarding/server/queries/get-onboarding-status'
+import { getWorkspaces } from '#/features/workspaces/server/queries/get-workspaces'
 
 export const Route = createFileRoute('/_dashboard')({
   component: DashboardLayout,
@@ -21,12 +22,14 @@ export const Route = createFileRoute('/_dashboard')({
       throw redirect({ to: '/onboarding' })
     }
   },
+  loader: async () => getWorkspaces(),
 })
 
 function DashboardLayout() {
+  const { workspaces, activeWorkspaceId } = Route.useLoaderData()
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar workspaces={workspaces} activeWorkspaceId={activeWorkspaceId} />
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-11 shrink-0 items-center gap-2 border-b border-hairline bg-parchment/80 px-4 backdrop-blur">
           <SidebarTrigger />
