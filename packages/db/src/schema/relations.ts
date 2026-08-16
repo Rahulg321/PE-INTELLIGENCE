@@ -4,9 +4,10 @@ import { workspaces, investmentMandates, mandateSectors, mandateCriteria } from 
 import { companies, contacts, companyFinancialPeriods } from "./companies";
 import { deals, dealEconomics } from "./deals";
 import { onboardingDrafts } from "./onboarding-drafts";
+import { agentTasks, agentEvents } from "./agent-tasks";
 
 export const relations = defineRelations(
-    { users, sessions, accounts, verifications, rateLimits, workspaces, investmentMandates, mandateSectors, mandateCriteria, companies, contacts, companyFinancialPeriods, deals, dealEconomics, onboardingDrafts },
+    { users, sessions, accounts, verifications, rateLimits, workspaces, investmentMandates, mandateSectors, mandateCriteria, companies, contacts, companyFinancialPeriods, deals, dealEconomics, onboardingDrafts, agentTasks, agentEvents },
     (helpers) => ({
         users: {
             sessions: helpers.many.sessions({ from: [helpers.users.id], to: [helpers.sessions.userId] }),
@@ -25,6 +26,7 @@ export const relations = defineRelations(
             investmentMandates: helpers.one.investmentMandates({ from: [helpers.workspaces.id], to: [helpers.investmentMandates.workspaceId] }),
             companies: helpers.many.companies({ from: [helpers.workspaces.id], to: [helpers.companies.workspaceId] }),
             deals: helpers.many.deals({ from: [helpers.workspaces.id], to: [helpers.deals.workspaceId] }),
+            agentTasks: helpers.many.agentTasks({ from: [helpers.workspaces.id], to: [helpers.agentTasks.workspaceId] }),
         },
         investmentMandates: {
             workspaces: helpers.one.workspaces({ from: [helpers.investmentMandates.workspaceId], to: [helpers.workspaces.id] }),
@@ -59,6 +61,14 @@ export const relations = defineRelations(
         },
         onboardingDrafts: {
             users: helpers.one.users({ from: [helpers.onboardingDrafts.userId], to: [helpers.users.id] }),
+        },
+        agentTasks: {
+            workspaces: helpers.one.workspaces({ from: [helpers.agentTasks.workspaceId], to: [helpers.workspaces.id] }),
+            events: helpers.many.agentEvents({ from: [helpers.agentTasks.id], to: [helpers.agentEvents.taskId] }),
+        },
+        agentEvents: {
+            workspaces: helpers.one.workspaces({ from: [helpers.agentEvents.workspaceId], to: [helpers.workspaces.id] }),
+            agentTasks: helpers.one.agentTasks({ from: [helpers.agentEvents.taskId], to: [helpers.agentTasks.id] }),
         },
     }),
 );

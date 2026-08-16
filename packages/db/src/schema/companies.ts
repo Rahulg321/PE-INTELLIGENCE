@@ -7,6 +7,12 @@ export const financialPeriodTypeEnum = pgEnum("financial_period_type", [
     "LTM",
 ]);
 
+export const enrichmentStatusEnum = pgEnum("enrichment_status", [
+    "PENDING",
+    "RUNNING",
+    "DONE",
+]);
+
 export const companies = pgTable(
     "companies",
     {
@@ -28,6 +34,11 @@ export const companies = pgTable(
         linkedinUrl: text("linkedin_url"),
         phone: text("phone"),
         generalEmail: text("general_email"),
+        logoUrl: text("logo_url"),
+        iconUrl: text("icon_url"),
+        enrichmentStatus: enrichmentStatusEnum("enrichment_status")
+            .notNull()
+            .default("PENDING"),
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at")
             .defaultNow()

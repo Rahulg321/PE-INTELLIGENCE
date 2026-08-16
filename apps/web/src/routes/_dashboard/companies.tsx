@@ -1,16 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { CompaniesPage } from '#/features/companies/components/companies-page'
+import { getCompanies } from '#/features/companies/server/queries/get-companies'
 
 export const Route = createFileRoute('/_dashboard/companies')({
   component: CompaniesRoute,
+  loader: async () => getCompanies(),
 })
 
 function CompaniesRoute() {
-  return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <span className="kicker">Companies</span>
-      <h1 className="mt-3 text-[40px] font-semibold leading-[1.1]">
-        Companies
-      </h1>
-    </div>
-  )
+  const initialCompanies = Route.useLoaderData()
+  return <CompaniesPage initialCompanies={initialCompanies} />
 }
