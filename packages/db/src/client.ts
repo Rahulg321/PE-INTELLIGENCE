@@ -33,7 +33,6 @@ export async function withDb<T>(
 
 /**
  * Return the db instance. Prefers the request-scoped client from `withDb`,
- * otherwise a process-wide pool from `DATABASE_URL` (Node/Bun: agent, scripts).
  */
 export function getDb(): Database {
   const requestDb = als.getStore();
