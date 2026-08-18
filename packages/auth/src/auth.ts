@@ -15,6 +15,9 @@ import { notifySignedIn } from "./signed-in";
 const advanced: NonNullable<BetterAuthOptions["advanced"]> = {
   cookiePrefix,
   useSecureCookies: env.isProduction,
+  ipAddress: {
+    ipAddressHeaders: ["cf-connecting-ip", "x-real-ip", "x-forwarded-for"],
+  },
 };
 
 if (env.cookieDomain !== undefined) {

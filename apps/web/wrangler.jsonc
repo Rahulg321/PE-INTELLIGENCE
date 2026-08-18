@@ -15,6 +15,7 @@
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
+      // Origin must be Neon's unpooled host (no `-pooler`). Hyperdrive is the pooler.
       "id": "95ab9f0f669349a585d183c740d9bd27",
       "localConnectionString": "postgresql://postgres:postgres@127.0.0.1:5432/crm?sslmode=disable",
     },

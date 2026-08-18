@@ -26,6 +26,12 @@ export async function withDb<T>(
   const database = drizzle({ client, relations });
   try {
     return await als.run(database, fn);
+  } catch (error) {
+    const cause = error instanceof Error ? error.cause : undefined;
+    if (cause instanceof Error) {
+      console.error(cause.message);
+    }
+    throw error;
   } finally {
     await client.end();
   }
