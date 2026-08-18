@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
+import { InvestmentStrategyStep } from '#/components/shared/mandate/investment-strategy-step'
+import { TargetSectorsStep } from '#/components/shared/mandate/target-sectors-step'
+import { InvestmentPreferencesStep } from '#/components/shared/mandate/investment-preferences-step'
+import { ReviewStep } from '#/components/shared/mandate/review-step'
+import type { MandateStepProps } from '#/components/shared/mandate/types'
+import { Button } from '#/components/ui/button'
 import { saveOnboarding } from '../server/mutations/save-onboarding'
 import { saveOnboardingDraft } from '../server/mutations/save-onboarding-draft'
-import { Button } from '#/components/ui/button'
 import { onboardingDraftDataSchema } from '../schemas'
 import type { OnboardingDraft, OnboardingDraftData } from '../schemas'
 import { CreateWorkspaceStep } from './create-workspace-step'
-import { InvestmentStrategyStep } from './investment-strategy-step'
-import { TargetSectorsStep } from './target-sectors-step'
-import { InvestmentPreferencesStep } from './investment-preferences-step'
-import { ReviewStep } from './review-step'
 
 const STEPS = [
   CreateWorkspaceStep,
@@ -28,10 +29,7 @@ const STEP_LABELS = [
   'Review & complete',
 ]
 
-export type OnboardingStepProps = {
-  form: OnboardingDraftData
-  onChange: (patch: Partial<OnboardingDraftData>) => void
-}
+export type OnboardingStepProps = MandateStepProps
 
 const isDigits = (value: string) => /^\d+$/.test(value.trim())
 

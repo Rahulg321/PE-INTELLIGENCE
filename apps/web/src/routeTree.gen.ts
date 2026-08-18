@@ -19,7 +19,13 @@ import { Route as DashboardCompaniesRouteImport } from './routes/_dashboard/comp
 import { Route as DashboardContactsRouteImport } from './routes/_dashboard/contacts'
 import { Route as DashboardDashboardRouteImport } from './routes/_dashboard/dashboard'
 import { Route as DashboardDealsRouteImport } from './routes/_dashboard/deals'
+import { Route as DashboardSettingsRouteImport } from './routes/_dashboard/settings'
 import { Route as OnboardingOnboardingRouteImport } from './routes/_onboarding/onboarding'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/_dashboard/settings/index'
+import { Route as DashboardSettingsConnectionsRouteImport } from './routes/_dashboard/settings/connections'
+import { Route as DashboardSettingsMandateRouteImport } from './routes/_dashboard/settings/mandate'
+import { Route as DashboardSettingsMembersRouteImport } from './routes/_dashboard/settings/members'
+import { Route as DashboardSettingsSsoRouteImport } from './routes/_dashboard/settings/sso'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -70,10 +76,43 @@ const DashboardDealsRoute = DashboardDealsRouteImport.update({
   path: '/deals',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const OnboardingOnboardingRoute = OnboardingOnboardingRouteImport.update({
   id: '/_onboarding/onboarding',
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardSettingsConnectionsRoute =
+  DashboardSettingsConnectionsRouteImport.update({
+    id: '/connections',
+    path: '/connections',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsMandateRoute =
+  DashboardSettingsMandateRouteImport.update({
+    id: '/mandate',
+    path: '/mandate',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsMembersRoute =
+  DashboardSettingsMembersRouteImport.update({
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsSsoRoute = DashboardSettingsSsoRouteImport.update({
+  id: '/sso',
+  path: '/sso',
+  getParentRoute: () => DashboardSettingsRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -90,8 +129,14 @@ export interface FileRoutesByFullPath {
   '/contacts': typeof DashboardContactsRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/deals': typeof DashboardDealsRoute
+  '/settings': typeof DashboardSettingsRouteWithChildren
   '/onboarding': typeof OnboardingOnboardingRoute
+  '/settings/connections': typeof DashboardSettingsConnectionsRoute
+  '/settings/mandate': typeof DashboardSettingsMandateRoute
+  '/settings/members': typeof DashboardSettingsMembersRoute
+  '/settings/sso': typeof DashboardSettingsSsoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/settings/': typeof DashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -103,7 +148,12 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardDashboardRoute
   '/deals': typeof DashboardDealsRoute
   '/onboarding': typeof OnboardingOnboardingRoute
+  '/settings/connections': typeof DashboardSettingsConnectionsRoute
+  '/settings/mandate': typeof DashboardSettingsMandateRoute
+  '/settings/members': typeof DashboardSettingsMembersRoute
+  '/settings/sso': typeof DashboardSettingsSsoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/settings': typeof DashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -117,8 +167,14 @@ export interface FileRoutesById {
   '/_dashboard/contacts': typeof DashboardContactsRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
   '/_dashboard/deals': typeof DashboardDealsRoute
+  '/_dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/_onboarding/onboarding': typeof OnboardingOnboardingRoute
+  '/_dashboard/settings/connections': typeof DashboardSettingsConnectionsRoute
+  '/_dashboard/settings/mandate': typeof DashboardSettingsMandateRoute
+  '/_dashboard/settings/members': typeof DashboardSettingsMembersRoute
+  '/_dashboard/settings/sso': typeof DashboardSettingsSsoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_dashboard/settings/': typeof DashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,8 +187,14 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/dashboard'
     | '/deals'
+    | '/settings'
     | '/onboarding'
+    | '/settings/connections'
+    | '/settings/mandate'
+    | '/settings/members'
+    | '/settings/sso'
     | '/api/auth/$'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,7 +206,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/deals'
     | '/onboarding'
+    | '/settings/connections'
+    | '/settings/mandate'
+    | '/settings/members'
+    | '/settings/sso'
     | '/api/auth/$'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -157,8 +224,14 @@ export interface FileRouteTypes {
     | '/_dashboard/contacts'
     | '/_dashboard/dashboard'
     | '/_dashboard/deals'
+    | '/_dashboard/settings'
     | '/_onboarding/onboarding'
+    | '/_dashboard/settings/connections'
+    | '/_dashboard/settings/mandate'
+    | '/_dashboard/settings/members'
+    | '/_dashboard/settings/sso'
     | '/api/auth/$'
+    | '/_dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -242,12 +315,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDealsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/settings': {
+      id: '/_dashboard/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_onboarding/onboarding': {
       id: '/_onboarding/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingOnboardingRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_dashboard/settings/': {
+      id: '/_dashboard/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/_dashboard/settings/connections': {
+      id: '/_dashboard/settings/connections'
+      path: '/connections'
+      fullPath: '/settings/connections'
+      preLoaderRoute: typeof DashboardSettingsConnectionsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/_dashboard/settings/mandate': {
+      id: '/_dashboard/settings/mandate'
+      path: '/mandate'
+      fullPath: '/settings/mandate'
+      preLoaderRoute: typeof DashboardSettingsMandateRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/_dashboard/settings/members': {
+      id: '/_dashboard/settings/members'
+      path: '/members'
+      fullPath: '/settings/members'
+      preLoaderRoute: typeof DashboardSettingsMembersRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/_dashboard/settings/sso': {
+      id: '/_dashboard/settings/sso'
+      path: '/sso'
+      fullPath: '/settings/sso'
+      preLoaderRoute: typeof DashboardSettingsSsoRouteImport
+      parentRoute: typeof DashboardSettingsRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -271,11 +386,31 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface DashboardSettingsRouteChildren {
+  DashboardSettingsConnectionsRoute: typeof DashboardSettingsConnectionsRoute
+  DashboardSettingsMandateRoute: typeof DashboardSettingsMandateRoute
+  DashboardSettingsMembersRoute: typeof DashboardSettingsMembersRoute
+  DashboardSettingsSsoRoute: typeof DashboardSettingsSsoRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+}
+
+const DashboardSettingsRouteChildren: DashboardSettingsRouteChildren = {
+  DashboardSettingsConnectionsRoute: DashboardSettingsConnectionsRoute,
+  DashboardSettingsMandateRoute: DashboardSettingsMandateRoute,
+  DashboardSettingsMembersRoute: DashboardSettingsMembersRoute,
+  DashboardSettingsSsoRoute: DashboardSettingsSsoRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardSettingsRouteWithChildren =
+  DashboardSettingsRoute._addFileChildren(DashboardSettingsRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardCompaniesRoute: typeof DashboardCompaniesRoute
   DashboardContactsRoute: typeof DashboardContactsRoute
   DashboardDashboardRoute: typeof DashboardDashboardRoute
   DashboardDealsRoute: typeof DashboardDealsRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRouteWithChildren
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -283,6 +418,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardContactsRoute: DashboardContactsRoute,
   DashboardDashboardRoute: DashboardDashboardRoute,
   DashboardDealsRoute: DashboardDealsRoute,
+  DashboardSettingsRoute: DashboardSettingsRouteWithChildren,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(

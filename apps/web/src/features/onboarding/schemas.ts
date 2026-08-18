@@ -2,23 +2,8 @@ import { z } from 'zod'
 
 const websiteRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}([/?#]\S*)?$/i
 
-export const onboardingSchema = z
+export const mandateSchema = z
   .object({
-    firmName: z
-      .string()
-      .trim()
-      .min(2, 'Enter your workspace name')
-      .max(200),
-    website: z
-      .string()
-      .trim()
-      .optional()
-      .refine((v) => !v || websiteRegex.test(v), {
-        message: 'Enter a valid URL',
-      })
-      .transform((v) =>
-        v && !/^https?:\/\//i.test(v) ? `https://${v}` : v,
-      ),
     geography: z
       .array(z.string().trim().min(1))
       .min(1, 'Select at least one geography'),
@@ -82,6 +67,26 @@ export const onboardingSchema = z
     }
   })
 
+export const onboardingSchema = z
+  .object({
+    firmName: z
+      .string()
+      .trim()
+      .min(2, 'Enter your workspace name')
+      .max(200),
+    website: z
+      .string()
+      .trim()
+      .optional()
+      .refine((v) => !v || websiteRegex.test(v), {
+        message: 'Enter a valid URL',
+      })
+      .transform((v) =>
+        v && !/^https?:\/\//i.test(v) ? `https://${v}` : v,
+      ),
+  })
+  .merge(mandateSchema)
+
 export const onboardingSearchSchema = z.object({
   step: z.coerce.number().int().min(0).max(4).default(0).catch(0),
 })
@@ -111,6 +116,8 @@ export const onboardingDraftSchema = z.object({
 
 export type OnboardingInput = z.input<typeof onboardingSchema>
 export type OnboardingOutput = z.output<typeof onboardingSchema>
+export type MandateInput = z.input<typeof mandateSchema>
+export type MandateOutput = z.output<typeof mandateSchema>
 export type OnboardingSearch = z.infer<typeof onboardingSearchSchema>
 export type OnboardingDraftData = z.infer<typeof onboardingDraftDataSchema>
 export type OnboardingDraft = z.infer<typeof onboardingDraftSchema>

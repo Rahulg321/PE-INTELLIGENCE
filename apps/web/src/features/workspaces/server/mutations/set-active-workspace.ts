@@ -1,10 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
 import { setCookie } from '@tanstack/react-start/server'
-import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { db, workspaces } from 'db'
 import { authMiddleware } from '#/features/auth/server/auth-middleware'
 import { ACTIVE_WORKSPACE_COOKIE } from '../../constants'
+import { workspacesService } from '../workspaces-service'
 
 const setActiveWorkspaceSchema = z.object({
   workspaceId: z.string().min(1),
@@ -14,20 +13,7 @@ export const setActiveWorkspace = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(setActiveWorkspaceSchema)
   .handler(async ({ data, context }) => {
-    const rows = await db
-      .select({ id: workspaces.id })
-      .from(workspaces)
-      .where(
-        and(
-          eq(workspaces.id, data.workspaceId),
-          eq(workspaces.ownerUserId, context.user.id),
-        ),
-      )
-      .limit(1)
-
-    if (rows.length === 0) throw new Error('Workspace not found')
-
-    const workspace = rows[0]
+    const workspace = await workspacesService.getWorkspace(context.user.id, data.workspaceId)
 
     setCookie(ACTIVE_WORKSPACE_COOKIE, workspace.id, {
       path: '/',

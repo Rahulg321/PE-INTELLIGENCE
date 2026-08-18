@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, index, uniqueIndex, boolean } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 
 export const workspaces = pgTable(
@@ -11,13 +11,20 @@ export const workspaces = pgTable(
         name: text("name").notNull(),
         slug: text("slug").notNull().unique(),
         website: text("website"),
+        contextApiKey: text("context_api_key"),
+        researchModel: text("research_model"),
+        deletedAt: timestamp("deleted_at"),
+        deletedBy: text("deleted_by").references(() => users.id),
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at")
             .defaultNow()
             .$onUpdate(() => new Date())
             .notNull(),
     },
-    (table) => [index("workspaces_ownerUserId_idx").on(table.ownerUserId)],
+    (table) => [
+        index("workspaces_ownerUserId_idx").on(table.ownerUserId),
+        index("workspaces_deletedAt_idx").on(table.deletedAt),
+    ],
 );
 
 export const investmentMandates = pgTable(
@@ -34,6 +41,7 @@ export const investmentMandates = pgTable(
         maxRevenue: integer("max_revenue"),
         minEbitda: integer("min_ebitda"),
         maxEbitda: integer("max_ebitda"),
+        noSectorPreference: boolean("no_sector_preference").notNull().default(false),
         version: integer("version").notNull().default(1),
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at")

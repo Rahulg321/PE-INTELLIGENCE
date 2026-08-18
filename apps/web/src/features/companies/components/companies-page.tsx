@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '#/components/ui/button'
 import {
@@ -13,19 +14,70 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { getCompanies } from '../server/queries/get-companies'
 import { createCompany } from '../server/mutations/create-company'
+import type { CompanySheetAdd, CompanySheetTab } from '../schemas'
 import { CompaniesDataTable } from './companies-data-table'
 import { CompanySheet } from './company-sheet'
 
 export function CompaniesPage({
   initialCompanies,
+  companyId,
+  tab,
+  add,
 }: {
   initialCompanies: Awaited<ReturnType<typeof getCompanies>>
+  companyId?: string
+  tab?: CompanySheetTab
+  add?: CompanySheetAdd
 }) {
+  const navigate = useNavigate({ from: '/companies' })
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [website, setWebsite] = useState('')
   const [createOpen, setCreateOpen] = useState(false)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  const openCompany = (id: string) => {
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        companyId: id,
+        tab: prev.tab ?? 'overview',
+        add: undefined,
+      }),
+    })
+  }
+
+  const closeCompany = () => {
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        companyId: undefined,
+        tab: undefined,
+        add: undefined,
+      }),
+    })
+  }
+
+  const setTab = (next: CompanySheetTab) => {
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        tab: next,
+        add: next === 'contacts' ? prev.add : undefined,
+      }),
+      replace: true,
+    })
+  }
+
+  const setAddingContact = (open: boolean) => {
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        tab: 'contacts',
+        add: open ? 'contact' : undefined,
+      }),
+      replace: true,
+    })
+  }
 
   const companiesQuery = useQuery({
     queryKey: ['companies'],
@@ -62,7 +114,7 @@ export function CompaniesPage({
     <div className="mx-auto w-full max-w-6xl px-2 py-6 md:px-4 md:py-8">
       <CompaniesDataTable
         data={companies}
-        onRowClick={setSelectedId}
+        onRowClick={openCompany}
         onCreateClick={() => setCreateOpen(true)}
       />
 
@@ -120,8 +172,12 @@ export function CompaniesPage({
       </Dialog>
 
       <CompanySheet
-        companyId={selectedId}
-        onClose={() => setSelectedId(null)}
+        companyId={companyId ?? null}
+        tab={tab ?? 'overview'}
+        addingContact={add === 'contact'}
+        onTabChange={setTab}
+        onAddingContactChange={setAddingContact}
+        onClose={closeCompany}
       />
     </div>
   )

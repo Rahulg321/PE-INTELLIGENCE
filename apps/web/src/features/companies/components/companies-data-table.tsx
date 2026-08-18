@@ -44,7 +44,7 @@ import {
 } from '#/components/ui/table'
 import { columns  } from './columns'
 import type {CompanyRow} from './columns';
-import { features } from './data-table-features'
+import { dataTableFeatures } from '#/components/shared/data-table/data-table-features'
 
 const COLUMN_LABELS = {
   company: 'Company',
@@ -108,7 +108,7 @@ export function CompaniesDataTable({
   }, [data])
 
   const table = useTable({
-    features,
+    features: dataTableFeatures,
     data,
     columns,
     onSortingChange: setSorting,

@@ -13,7 +13,6 @@ export const agentTasks = pgTable(
         entityId: text("entity_id").notNull(),
         reason: text("reason"),
         priority: integer("priority").notNull().default(0),
-        budget: integer("budget").notNull().default(0),
         dueAt: timestamp("due_at").defaultNow().notNull(),
         leasedUntil: timestamp("leased_until"),
         startedAt: timestamp("started_at"),

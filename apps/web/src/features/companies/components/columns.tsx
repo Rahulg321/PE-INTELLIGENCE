@@ -1,8 +1,8 @@
 import { createColumnHelper } from '@tanstack/react-table'
 import { Badge } from '#/components/ui/badge'
+import { DataTableColumnHeader } from '#/components/shared/data-table/data-table-column-header'
+import type { DataTableFeatures } from '#/components/shared/data-table/data-table-features'
 import type { getCompanies } from '../server/queries/get-companies'
-import { DataTableColumnHeader } from './data-table-column-header'
-import type { DataTableFeatures } from './data-table-features'
 
 export type CompanyRow = Awaited<ReturnType<typeof getCompanies>>[number]
 

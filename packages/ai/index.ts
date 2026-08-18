@@ -1,3 +1,3 @@
 export * from "./models/deepseek";
 export * from "./models/openai";
-export * from "./research";
+export * from "./models/registry";

@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pe-intelligence-web",
+  "compatibility_date": "2026-08-18",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/server.ts",
+  "observability": {
+    "enabled": true
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "95ab9f0f669349a585d183c740d9bd27",
+      "localConnectionString": "postgresql://postgres:postgres@localhost:5432/crm"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "agent_tasks" DROP COLUMN "budget";

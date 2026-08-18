@@ -1,14 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { DealsPage } from '#/features/deals/components/deals-page'
+import { dealsSearchSchema } from '#/features/deals/schemas'
+import { getDeals } from '#/features/deals/server/queries/get-deals'
 
 export const Route = createFileRoute('/_dashboard/deals')({
   component: DealsRoute,
+  validateSearch: dealsSearchSchema,
+  loader: async () => getDeals(),
 })
 
 function DealsRoute() {
+  const initialDeals = Route.useLoaderData()
+  const { dealId, tab } = Route.useSearch()
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <span className="kicker">Deals</span>
-      <h1 className="mt-3 text-[40px] font-semibold leading-[1.1]">Deals</h1>
-    </div>
+    <DealsPage
+      initialDeals={initialDeals}
+      dealId={dealId}
+      tab={tab}
+    />
   )
 }

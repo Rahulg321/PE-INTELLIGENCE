@@ -11,11 +11,25 @@ import {
   Handshake,
   LayoutDashboard,
   LogOut,
+  Moon,
   Plus,
+  Settings,
+  Sun,
+  UserRound,
   Users,
 } from 'lucide-react'
 import { authClient } from '#/features/auth/client'
 import { setActiveWorkspace } from '#/features/workspaces/server/mutations/set-active-workspace'
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '#/components/ui/dropdown-menu'
 import {
   Sidebar,
   SidebarContent,
@@ -27,15 +41,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '#/components/ui/sidebar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '#/components/ui/dropdown-menu'
+import { useTheme } from '#/lib/theme'
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -56,8 +64,11 @@ export function AppSidebar({
   const pathname = useLocation().pathname
   const navigate = useNavigate()
   const router = useRouter()
+  const { isMobile } = useSidebar()
+  const { theme, toggle } = useTheme()
   const { data: session } = authClient.useSession()
   const user = session?.user
+  const initials = (user?.name ?? user?.email ?? 'U').charAt(0).toUpperCase()
 
   const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId)
 
@@ -141,29 +152,74 @@ export function AppSidebar({
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              onClick={async () => {
-                await authClient.signOut()
-                navigate({ to: '/login' })
-              }}
-            >
-              {user?.image ? (
-                <img
-                  src={user.image}
-                  alt=""
-                  className="size-8 rounded-full object-cover"
-                />
-              ) : (
-                <span className="flex aspect-square size-8 items-center justify-center rounded-full bg-muted font-semibold">
-                  {(user?.name ?? 'U').charAt(0).toUpperCase()}
-                </span>
-              )}
-              <span className="truncate">
-                {user?.name ?? user?.email ?? 'Account'}
-              </span>
-              <LogOut className="ml-auto" />
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton size="lg">
+                  <Avatar>
+                    <AvatarImage src={user?.image ?? undefined} alt="" />
+                    <AvatarFallback>{initials}</AvatarFallback>
+                  </Avatar>
+                  <span className="truncate">
+                    {user?.name ?? user?.email ?? 'Account'}
+                  </span>
+                  <ChevronsUpDown className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                align="end"
+                side={isMobile ? 'bottom' : 'top'}
+                sideOffset={4}
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-normal">
+                    <span className="flex flex-col">
+                      <span className="truncate font-medium">
+                        {user?.name ?? 'Account'}
+                      </span>
+                      {user?.email ? (
+                        <span className="truncate text-xs font-normal text-muted-foreground">
+                          {user.email}
+                        </span>
+                      ) : null}
+                    </span>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onSelect={() => void navigate({ to: '/settings' })}
+                  >
+                    <UserRound />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={toggle}>
+                    {theme === 'dark' ? <Sun /> : <Moon />}
+                    Toggle theme
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => void navigate({ to: '/settings' })}
+                  >
+                    <Settings />
+                    Settings
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={() => {
+                      void authClient.signOut().then(() => {
+                        void navigate({ to: '/login' })
+                      })
+                    }}
+                  >
+                    <LogOut />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

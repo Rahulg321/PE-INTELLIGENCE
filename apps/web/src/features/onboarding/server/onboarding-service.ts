@@ -36,7 +36,7 @@ async function uniqueSlug(base: string) {
 export const onboardingService = {
   async getStatus(userId: string) {
     const workspace = await db.query.workspaces.findFirst({
-      where: { ownerUserId: userId },
+      where: { ownerUserId: userId, deletedAt: { isNull: true } },
       columns: { id: true },
     })
     return { onboarded: Boolean(workspace) }
@@ -94,6 +94,7 @@ export const onboardingService = {
         maxRevenue: data.maxRevenue ?? null,
         minEbitda: data.minEbitda,
         maxEbitda: data.maxEbitda ?? null,
+        noSectorPreference: data.noSectorPreference,
         version: 1,
       })
 

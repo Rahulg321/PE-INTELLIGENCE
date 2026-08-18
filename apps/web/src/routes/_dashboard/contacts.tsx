@@ -1,14 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ContactsPage } from '#/features/contacts/components/contacts-page'
+import { contactsSearchSchema } from '#/features/contacts/schemas'
+import { getContacts } from '#/features/contacts/server/queries/get-contacts'
 
 export const Route = createFileRoute('/_dashboard/contacts')({
   component: ContactsRoute,
+  validateSearch: contactsSearchSchema,
+  loader: async () => getContacts(),
 })
 
 function ContactsRoute() {
+  const initialContacts = Route.useLoaderData()
+  const { contactId, tab } = Route.useSearch()
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <span className="kicker">Contacts</span>
-      <h1 className="mt-3 text-[40px] font-semibold leading-[1.1]">Contacts</h1>
-    </div>
+    <ContactsPage
+      initialContacts={initialContacts}
+      contactId={contactId}
+      tab={tab}
+    />
   )
 }
