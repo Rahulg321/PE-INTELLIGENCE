@@ -10,7 +10,7 @@
     "generate-routes": "tsr generate",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "bun run --cwd ../../packages/db db:migrate:remote && bun run build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",

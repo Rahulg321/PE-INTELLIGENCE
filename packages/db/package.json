@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:migrate": "bun scripts/migrate.ts local",
+    "db:migrate:local": "bun scripts/migrate.ts local",
+    "db:migrate:remote": "bun scripts/migrate.ts remote",
     "db:studio": "drizzle-kit studio",
     "db:purge-workspaces": "bun scripts/purge-workspaces.ts"
   },
