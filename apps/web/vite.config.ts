@@ -8,7 +8,13 @@ import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 const config = defineConfig({
-  resolve: { tsconfigPaths: true },
+  resolve: {
+    tsconfigPaths: true,
+    dedupe: ['drizzle-orm'],
+  },
+  ssr: {
+    noExternal: ['drizzle-orm', '@better-auth/drizzle-adapter'],
+  },
   plugins: [
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
     devtools(),

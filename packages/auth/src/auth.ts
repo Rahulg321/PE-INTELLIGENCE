@@ -1,5 +1,6 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { eq } from "drizzle-orm";
 import {
   db,
   users,
@@ -58,7 +59,7 @@ export const authOptions: BetterAuthOptions = {
   },
   rateLimit: {
     enabled: true,
-    storage: "database",
+    storage: "memory",
   },
   advanced,
   trustedOrigins: env.trustedOrigins,
@@ -74,9 +75,11 @@ export const authOptions: BetterAuthOptions = {
     session: {
       create: {
         after: async (session) => {
-          const user = await db.query.users.findFirst({
-            where: { id: session.userId },
-          });
+          const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, session.userId))
+            .limit(1);
           if (user) await notifySignedIn(user);
         },
       },
