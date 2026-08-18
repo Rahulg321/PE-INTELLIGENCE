@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "cf:deploy": "bun run --filter pe-intelligence-web cf:deploy",
+    "cf:versions": "bun run --filter pe-intelligence-web cf:versions",
     "dev": "turbo run dev --filter=\"./apps/*\"",
     "lint": "turbo run lint",
     "lint:oxlint": "oxlint",
