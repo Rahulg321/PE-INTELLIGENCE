@@ -23,7 +23,11 @@ function connectionString(target: MigrateTarget): string {
     }
     case 'remote': {
       const url = process.env.DATABASE_URL_REMOTE
-      if (!url) throw new Error('DATABASE_URL_REMOTE is not set')
+      if (!url) {
+        throw new Error(
+          'DATABASE_URL_REMOTE is not set. For Cloudflare Builds, add it under Settings → Builds → Build variables and secrets — wrangler secret put is runtime-only and is not available during migrate.',
+        )
+      }
       return url
     }
     default: {
