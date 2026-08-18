@@ -4,8 +4,6 @@
 
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
-
 :root {
   /* Apple design tokens — source: DESIGN.md */
   --action: #0066cc;
@@ -62,42 +60,6 @@
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--hairline);
   --sidebar-ring: var(--action-focus);
-}
-
-.dark {
-  --background: #000000;
-  --foreground: #f5f5f7;
-  --card: var(--tile-1);
-  --card-foreground: #f5f5f7;
-  --popover: var(--tile-1);
-  --popover-foreground: #f5f5f7;
-  --primary: var(--action-on-dark);
-  --primary-foreground: #ffffff;
-  --secondary: var(--tile-1);
-  --secondary-foreground: #f5f5f7;
-  --muted: var(--tile-2);
-  --muted-foreground: #98989d;
-  --accent: var(--tile-2);
-  --accent-foreground: #f5f5f7;
-  --destructive: #ff453a;
-  --destructive-foreground: #ffffff;
-  --border: #38383a;
-  --input: #48484a;
-  --ring: var(--action-on-dark);
-  --chart-1: #2997ff;
-  --chart-2: #0a84ff;
-  --chart-3: #5e5ce6;
-  --chart-4: #64d2ff;
-  --chart-5: #98989d;
-
-  --sidebar: #151516;
-  --sidebar-foreground: #f5f5f7;
-  --sidebar-primary: var(--action-on-dark);
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: var(--tile-2);
-  --sidebar-accent-foreground: #f5f5f7;
-  --sidebar-border: #38383a;
-  --sidebar-ring: var(--action-on-dark);
 }
 
 @theme inline {
@@ -178,10 +140,6 @@ html {
   color-scheme: light;
 }
 
-html.dark {
-  color-scheme: dark;
-}
-
 html,
 body,
 #app {
@@ -239,8 +197,8 @@ pre code {
 .prose pre {
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
-  background: var(--tile-1);
-  color: var(--on-dark);
+  background: var(--parchment);
+  color: var(--ink);
 }
 
 .kicker {

@@ -26,7 +26,7 @@ function OnboardingRoute() {
         title="Set up your investment workspace"
         subtitle="Tell us what your firm looks to invest in so we can screen deals that fit your mandate."
       >
-        <ul className="space-y-3 text-sm text-muted-on-dark">
+        <ul className="space-y-3 text-sm">
           <li className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-primary" />
             Create your workspace

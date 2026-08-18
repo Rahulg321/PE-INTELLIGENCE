@@ -11,10 +11,8 @@ import {
   Handshake,
   LayoutDashboard,
   LogOut,
-  Moon,
   Plus,
   Settings,
-  Sun,
   UserRound,
   Users,
 } from 'lucide-react'
@@ -43,7 +41,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '#/components/ui/sidebar'
-import { useTheme } from '#/lib/theme'
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -65,7 +62,6 @@ export function AppSidebar({
   const navigate = useNavigate()
   const router = useRouter()
   const { isMobile } = useSidebar()
-  const { theme, toggle } = useTheme()
   const { data: session } = authClient.useSession()
   const user = session?.user
   const initials = (user?.name ?? user?.email ?? 'U').charAt(0).toUpperCase()
@@ -192,10 +188,6 @@ export function AppSidebar({
                   >
                     <UserRound />
                     Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={toggle}>
-                    {theme === 'dark' ? <Sun /> : <Moon />}
-                    Toggle theme
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onSelect={() => void navigate({ to: '/settings' })}
