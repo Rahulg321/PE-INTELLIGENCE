@@ -43,7 +43,10 @@ export function ResetPasswordPage({ token }: { token: string }) {
           </p>
         </div>
         <p className="text-center text-sm text-muted-foreground">
-          <Link to="/forgot-password" className="text-primary no-underline hover:underline">
+          <Link
+            to="/forgot-password"
+            className="text-primary no-underline hover:underline"
+          >
             Request a new reset link
           </Link>
         </p>
@@ -70,7 +73,10 @@ export function ResetPasswordPage({ token }: { token: string }) {
         }}
       >
         <div className="grid gap-2">
-          <Label htmlFor="password" className="text-xs font-semibold tracking-[-0.224px]">
+          <Label
+            htmlFor="password"
+            className="text-xs font-semibold tracking-[-0.224px]"
+          >
             New password
           </Label>
           <Input
@@ -83,7 +89,10 @@ export function ResetPasswordPage({ token }: { token: string }) {
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="confirm-password" className="text-xs font-semibold tracking-[-0.224px]">
+          <Label
+            htmlFor="confirm-password"
+            className="text-xs font-semibold tracking-[-0.224px]"
+          >
             Confirm new password
           </Label>
           <Input
@@ -97,15 +106,19 @@ export function ResetPasswordPage({ token }: { token: string }) {
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
-        {password !== '' && confirmPassword !== '' && password !== confirmPassword && (
-          <p className="text-sm text-destructive">Passwords do not match.</p>
-        )}
-
-        <Button type="submit" className="w-full" disabled={!canSubmit || pending}>
+        {password !== '' &&
+          confirmPassword !== '' &&
+          password !== confirmPassword && (
+            <p className="text-sm text-destructive">Passwords do not match.</p>
+          )}
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!canSubmit || pending}
+        >
           {pending ? 'Resetting…' : 'Reset password'}
         </Button>
       </form>
-
       <p className="text-center text-sm text-muted-foreground">
         <Link to="/login" className="text-primary no-underline hover:underline">
           Back to sign in
