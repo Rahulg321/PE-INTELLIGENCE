@@ -12,6 +12,13 @@
     "GOOGLE_CLIENT_SECRET"
   ],
   "globalDependencies": [".env*"],
+  "globalPassThroughEnv": [
+    "CI",
+    "WORKERS_CI",
+    "WORKERS_CI_BUILD_UUID",
+    "WORKERS_CI_COMMIT_SHA",
+    "WORKERS_CI_BRANCH"
+  ],
   "tasks": {
     "transit": {
       "dependsOn": ["^transit"]
@@ -36,7 +43,8 @@
       "dependsOn": ["^auth:generate"]
     },
     "db:migrate:remote": {
-      "cache": false
+      "cache": false,
+      "env": ["DATABASE_URL_REMOTE"]
     },
     "cf:deploy": {
       "cache": false,

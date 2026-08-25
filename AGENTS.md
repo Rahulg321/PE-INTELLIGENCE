@@ -58,6 +58,7 @@ Root `turbo.json` is the single source of truth for task orchestration. Root scr
 - Deploy command: `cd apps/web && bunx wrangler deploy`
 - Version command (non-production branches): `cd apps/web && bunx wrangler versions upload`
 - `DATABASE_URL_REMOTE` is set as a **build variable** (not runtime) so migrations work during the build step. Runtime vars/secrets live in Settings → Variables & Secrets (they are never available at build time).
+- **Turbo strict env mode gotcha:** turbo runs in strict mode and only passes vars declared in `turbo.json` to task processes. `DATABASE_URL_REMOTE` is declared on the `db:migrate:remote` task (`env: ["DATABASE_URL_REMOTE"]`) and `globalPassThroughEnv` carries `CI`/`WORKERS_CI*`. Any new build-only var must be declared there too or it'll silently not reach the script ("is not set" errors in Workers Builds).
 
 This is separate from GitHub Actions CI (`.github/workflows/ci.yml`), which only validates and never deploys.
 
