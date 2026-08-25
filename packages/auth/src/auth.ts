@@ -13,6 +13,7 @@ import { cookiePrefix } from "./cookies";
 import { env, isGoogleConfigured } from "./env";
 import { notifySignedIn } from "./signed-in";
 
+
 const advanced: NonNullable<BetterAuthOptions["advanced"]> = {
   cookiePrefix,
   useSecureCookies: env.isProduction,
@@ -65,11 +66,11 @@ export const authOptions: BetterAuthOptions = {
   trustedOrigins: env.trustedOrigins,
   socialProviders: isGoogleConfigured()
     ? {
-        google: {
-          clientId: env.googleClientId!,
-          clientSecret: env.googleClientSecret!,
-        },
-      }
+      google: {
+        clientId: env.googleClientId!,
+        clientSecret: env.googleClientSecret!,
+      },
+    }
     : {},
   databaseHooks: {
     session: {

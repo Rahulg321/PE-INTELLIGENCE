@@ -29,7 +29,10 @@ function DashboardLayout() {
   const { workspaces, activeWorkspaceId } = Route.useLoaderData()
   return (
     <SidebarProvider>
-      <AppSidebar workspaces={workspaces} activeWorkspaceId={activeWorkspaceId} />
+      <AppSidebar
+        workspaces={workspaces}
+        activeWorkspaceId={activeWorkspaceId}
+      />
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-11 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
           <SidebarTrigger />

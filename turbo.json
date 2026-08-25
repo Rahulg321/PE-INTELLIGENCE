@@ -1,22 +1,50 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "BETTER_AUTH_URL",
+    "BETTER_AUTH_SECRET",
+    "APP_URL",
+    "COOKIE_DOMAIN",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET"
+  ],
+  "globalDependencies": [".env*"],
   "tasks": {
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+      "outputs": ["dist/**", ".wrangler/**"],
+      "outputLogs": "new-only"
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["transit"],
+      "outputLogs": "new-only"
     },
     "check-types": {
-      "dependsOn": ["^check-types"],
-      "env": ["DATABASE_URL"]
+      "dependsOn": ["transit"],
+      "outputLogs": "new-only"
+    },
+    "test": {
+      "outputLogs": "new-only"
     },
     "auth:generate": {
-      "dependsOn": ["^auth:generate"],
-      "env": ["DATABASE_URL"]
+      "dependsOn": ["^auth:generate"]
+    },
+    "db:migrate:remote": {
+      "cache": false
+    },
+    "cf:deploy": {
+      "cache": false,
+      "dependsOn": ["build", "db#db:migrate:remote"]
+    },
+    "cf:versions": {
+      "cache": false,
+      "dependsOn": ["build"]
     },
     "dev": {
       "cache": false,

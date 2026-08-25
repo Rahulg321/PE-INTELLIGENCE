@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3002",
-    "build": "vite build && tsc --noEmit",
+    "build": "vite build",
+    "check-types": "tsc --noEmit",
     "preview": "vite preview --port 3002",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "bun run build && wrangler deploy",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

@@ -12,8 +12,9 @@
     "preview": "vite preview",
     "cf:deploy": "wrangler deploy",
     "cf:versions": "wrangler versions upload",
-    "deploy": "bun run --cwd ../../packages/db db:migrate:remote && bun run build && bun run cf:deploy",
+    "deploy": "turbo run cf:deploy",
     "cf-typegen": "wrangler types",
+    "check-types": "tsc --noEmit",
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check ."
