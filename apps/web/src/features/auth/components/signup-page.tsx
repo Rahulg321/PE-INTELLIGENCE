@@ -1,18 +1,19 @@
 import { useState } from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { authClient } from '../client'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
 export function SignupPage() {
-  const navigate = useNavigate()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [sent, setSent] = useState(false)
 
   const canSubmit =
     name.trim() !== '' &&
@@ -28,14 +29,66 @@ export function SignupPage() {
       name: name.trim(),
       email: email.trim(),
       password,
-      callbackURL: '/onboarding',
+      callbackURL: `${window.location.origin}/onboarding`,
     })
     if (signUpError) {
       setError(signUpError.message ?? 'Unable to create your account')
       setPending(false)
       return
     }
-    await navigate({ to: '/onboarding' })
+    setPending(false)
+    setSent(true)
+  }
+
+  const resendVerification = async () => {
+    setResending(true)
+    setError(null)
+    const { error: sendError } = await authClient.sendVerificationEmail({
+      email: email.trim(),
+      callbackURL: `${window.location.origin}/onboarding`,
+    })
+    setResending(false)
+    if (sendError) {
+      setError(sendError.message ?? 'Unable to resend the verification email')
+    }
+  }
+
+  if (sent) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-[34px] font-semibold leading-[1.47] tracking-[-0.374px]">
+            Check your email
+          </h1>
+          <p className="mt-2 text-[17px] leading-[1.47] tracking-[-0.374px] text-muted-foreground">
+            We sent a verification link to <span className="font-medium">{email.trim()}</span>.
+            Click it to activate your account, then you can set up your
+            workspace.
+          </p>
+        </div>
+
+        {error && <p className="text-sm text-destructive">{error}</p>}
+
+        <div className="space-y-4">
+          <Button
+            type="button"
+            className="w-full"
+            variant="outline"
+            disabled={resending}
+            onClick={() => void resendVerification()}
+          >
+            {resending ? 'Sending…' : 'Resend verification email'}
+          </Button>
+        </div>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Already verified?{' '}
+          <Link to="/login" className="text-primary no-underline hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </div>
+    )
   }
 
   return (

@@ -1,5 +1,6 @@
 export const SETTINGS_NAV = [
   { to: '/settings', label: 'General', exact: true },
+  { to: '/settings/security', label: 'Security', exact: true },
   { to: '/settings/mandate', label: 'Investment mandate', exact: true },
   { to: '/settings/members', label: 'Members', exact: true },
   { to: '/settings/sso', label: 'SSO', exact: true },

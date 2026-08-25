@@ -5,11 +5,14 @@ import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 
-export function LoginPage() {
+export function LoginPage({ resetSuccess = false }: { resetSuccess?: boolean }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resent, setResent] = useState(false)
 
   const canSubmit = email.trim() !== '' && password !== ''
 
@@ -17,14 +20,37 @@ export function LoginPage() {
     if (!canSubmit) return
     setPending(true)
     setError(null)
+    setUnverifiedEmail(null)
+    setResent(false)
     const { error: signInError } = await authClient.signIn.email({
       email: email.trim(),
       password,
-      callbackURL: '/dashboard',
+      callbackURL: `${window.location.origin}/dashboard`,
     })
     if (signInError) {
-      setError(signInError.message ?? 'Unable to sign in')
+      if ((signInError as { code?: string }).code === 'EMAIL_NOT_VERIFIED') {
+        setUnverifiedEmail(email.trim())
+      } else {
+        setError(signInError.message ?? 'Unable to sign in')
+      }
       setPending(false)
+    }
+  }
+
+  const resendVerification = async () => {
+    if (!unverifiedEmail) return
+    setResending(true)
+    setError(null)
+    setResent(false)
+    const { error: sendError } = await authClient.sendVerificationEmail({
+      email: unverifiedEmail,
+      callbackURL: `${window.location.origin}/dashboard`,
+    })
+    setResending(false)
+    if (sendError) {
+      setError(sendError.message ?? 'Unable to resend the verification email')
+    } else {
+      setResent(true)
     }
   }
 
@@ -39,6 +65,35 @@ export function LoginPage() {
         </p>
       </div>
 
+      {resetSuccess && (
+        <p className="rounded-md border border-hairline bg-card px-4 py-3 text-sm">
+          Password updated. Sign in with your new password.
+        </p>
+      )}
+
+      {unverifiedEmail && (
+        <div className="rounded-md border border-hairline bg-card px-4 py-3">
+          <p className="text-sm">
+            Please verify <span className="font-medium">{unverifiedEmail}</span>{' '}
+            before signing in. We&apos;ve emailed you a new link.
+          </p>
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            className="h-auto px-0 py-1"
+            disabled={resending}
+            onClick={() => void resendVerification()}
+          >
+            {resent
+              ? 'Verification email sent — check your inbox'
+              : resending
+                ? 'Sending…'
+                : 'Resend verification email'}
+          </Button>
+        </div>
+      )}
+
       <div className="space-y-4">
         <Button
           className="w-full"
@@ -46,7 +101,7 @@ export function LoginPage() {
           onClick={() =>
             void authClient.signIn.social({
               provider: 'google',
-              callbackURL: '/dashboard',
+              callbackURL: `${window.location.origin}/dashboard`,
             })
           }
         >
@@ -80,9 +135,17 @@ export function LoginPage() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password" className="text-xs font-semibold tracking-[-0.224px]">
-              Password
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password" className="text-xs font-semibold tracking-[-0.224px]">
+                Password
+              </Label>
+              <Link
+                to="/forgot-password"
+                className="text-xs text-primary no-underline hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"
@@ -102,7 +165,7 @@ export function LoginPage() {
       </div>
 
       <p className="text-center text-sm text-muted-foreground">
-        Don't have an account?{' '}
+        Don&apos;t have an account?{' '}
         <Link to="/signup" className="text-primary no-underline hover:underline">
           Sign up
         </Link>

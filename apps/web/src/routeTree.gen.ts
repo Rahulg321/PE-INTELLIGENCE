@@ -13,18 +13,22 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
+import { Route as AuthVerifyEmailRouteImport } from './routes/_auth/verify-email'
 import { Route as DashboardCompaniesRouteImport } from './routes/_dashboard/companies'
 import { Route as DashboardContactsRouteImport } from './routes/_dashboard/contacts'
 import { Route as DashboardDashboardRouteImport } from './routes/_dashboard/dashboard'
 import { Route as DashboardDealsRouteImport } from './routes/_dashboard/deals'
 import { Route as DashboardSettingsRouteImport } from './routes/_dashboard/settings'
 import { Route as OnboardingOnboardingRouteImport } from './routes/_onboarding/onboarding'
+import { Route as AuthResetPasswordTokenRouteImport } from './routes/_auth/reset-password.$token'
 import { Route as DashboardSettingsIndexRouteImport } from './routes/_dashboard/settings/index'
 import { Route as DashboardSettingsConnectionsRouteImport } from './routes/_dashboard/settings/connections'
 import { Route as DashboardSettingsMandateRouteImport } from './routes/_dashboard/settings/mandate'
 import { Route as DashboardSettingsMembersRouteImport } from './routes/_dashboard/settings/members'
+import { Route as DashboardSettingsSecurityRouteImport } from './routes/_dashboard/settings/security'
 import { Route as DashboardSettingsSsoRouteImport } from './routes/_dashboard/settings/sso'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -46,6 +50,11 @@ const McpRoute = McpRouteImport.update({
   path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -54,6 +63,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 const AuthSignupRoute = AuthSignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
   getParentRoute: () => AuthRoute,
 } as any)
 const DashboardCompaniesRoute = DashboardCompaniesRouteImport.update({
@@ -86,6 +100,11 @@ const OnboardingOnboardingRoute = OnboardingOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthResetPasswordTokenRoute = AuthResetPasswordTokenRouteImport.update({
+  id: '/reset-password/$token',
+  path: '/reset-password/$token',
+  getParentRoute: () => AuthRoute,
+} as any)
 const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -109,6 +128,12 @@ const DashboardSettingsMembersRoute =
     path: '/members',
     getParentRoute: () => DashboardSettingsRoute,
   } as any)
+const DashboardSettingsSecurityRoute =
+  DashboardSettingsSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
 const DashboardSettingsSsoRoute = DashboardSettingsSsoRouteImport.update({
   id: '/sso',
   path: '/sso',
@@ -123,17 +148,21 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/mcp': typeof McpRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
+  '/verify-email': typeof AuthVerifyEmailRoute
   '/companies': typeof DashboardCompaniesRoute
   '/contacts': typeof DashboardContactsRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/deals': typeof DashboardDealsRoute
   '/settings': typeof DashboardSettingsRouteWithChildren
   '/onboarding': typeof OnboardingOnboardingRoute
+  '/reset-password/$token': typeof AuthResetPasswordTokenRoute
   '/settings/connections': typeof DashboardSettingsConnectionsRoute
   '/settings/mandate': typeof DashboardSettingsMandateRoute
   '/settings/members': typeof DashboardSettingsMembersRoute
+  '/settings/security': typeof DashboardSettingsSecurityRoute
   '/settings/sso': typeof DashboardSettingsSsoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/settings/': typeof DashboardSettingsIndexRoute
@@ -141,16 +170,20 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/mcp': typeof McpRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
+  '/verify-email': typeof AuthVerifyEmailRoute
   '/companies': typeof DashboardCompaniesRoute
   '/contacts': typeof DashboardContactsRoute
   '/dashboard': typeof DashboardDashboardRoute
   '/deals': typeof DashboardDealsRoute
   '/onboarding': typeof OnboardingOnboardingRoute
+  '/reset-password/$token': typeof AuthResetPasswordTokenRoute
   '/settings/connections': typeof DashboardSettingsConnectionsRoute
   '/settings/mandate': typeof DashboardSettingsMandateRoute
   '/settings/members': typeof DashboardSettingsMembersRoute
+  '/settings/security': typeof DashboardSettingsSecurityRoute
   '/settings/sso': typeof DashboardSettingsSsoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/settings': typeof DashboardSettingsIndexRoute
@@ -161,17 +194,21 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/_dashboard': typeof DashboardRouteWithChildren
   '/mcp': typeof McpRoute
+  '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
+  '/_auth/verify-email': typeof AuthVerifyEmailRoute
   '/_dashboard/companies': typeof DashboardCompaniesRoute
   '/_dashboard/contacts': typeof DashboardContactsRoute
   '/_dashboard/dashboard': typeof DashboardDashboardRoute
   '/_dashboard/deals': typeof DashboardDealsRoute
   '/_dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/_onboarding/onboarding': typeof OnboardingOnboardingRoute
+  '/_auth/reset-password/$token': typeof AuthResetPasswordTokenRoute
   '/_dashboard/settings/connections': typeof DashboardSettingsConnectionsRoute
   '/_dashboard/settings/mandate': typeof DashboardSettingsMandateRoute
   '/_dashboard/settings/members': typeof DashboardSettingsMembersRoute
+  '/_dashboard/settings/security': typeof DashboardSettingsSecurityRoute
   '/_dashboard/settings/sso': typeof DashboardSettingsSsoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_dashboard/settings/': typeof DashboardSettingsIndexRoute
@@ -181,17 +218,21 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/mcp'
+    | '/forgot-password'
     | '/login'
     | '/signup'
+    | '/verify-email'
     | '/companies'
     | '/contacts'
     | '/dashboard'
     | '/deals'
     | '/settings'
     | '/onboarding'
+    | '/reset-password/$token'
     | '/settings/connections'
     | '/settings/mandate'
     | '/settings/members'
+    | '/settings/security'
     | '/settings/sso'
     | '/api/auth/$'
     | '/settings/'
@@ -199,16 +240,20 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/mcp'
+    | '/forgot-password'
     | '/login'
     | '/signup'
+    | '/verify-email'
     | '/companies'
     | '/contacts'
     | '/dashboard'
     | '/deals'
     | '/onboarding'
+    | '/reset-password/$token'
     | '/settings/connections'
     | '/settings/mandate'
     | '/settings/members'
+    | '/settings/security'
     | '/settings/sso'
     | '/api/auth/$'
     | '/settings'
@@ -218,17 +263,21 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_dashboard'
     | '/mcp'
+    | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/signup'
+    | '/_auth/verify-email'
     | '/_dashboard/companies'
     | '/_dashboard/contacts'
     | '/_dashboard/dashboard'
     | '/_dashboard/deals'
     | '/_dashboard/settings'
     | '/_onboarding/onboarding'
+    | '/_auth/reset-password/$token'
     | '/_dashboard/settings/connections'
     | '/_dashboard/settings/mandate'
     | '/_dashboard/settings/members'
+    | '/_dashboard/settings/security'
     | '/_dashboard/settings/sso'
     | '/api/auth/$'
     | '/_dashboard/settings/'
@@ -273,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/forgot-password': {
+      id: '/_auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/login': {
       id: '/_auth/login'
       path: '/login'
@@ -285,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/verify-email': {
+      id: '/_auth/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_dashboard/companies': {
@@ -329,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingOnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/reset-password/$token': {
+      id: '/_auth/reset-password/$token'
+      path: '/reset-password/$token'
+      fullPath: '/reset-password/$token'
+      preLoaderRoute: typeof AuthResetPasswordTokenRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_dashboard/settings/': {
       id: '/_dashboard/settings/'
       path: '/'
@@ -357,6 +427,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsMembersRouteImport
       parentRoute: typeof DashboardSettingsRoute
     }
+    '/_dashboard/settings/security': {
+      id: '/_dashboard/settings/security'
+      path: '/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof DashboardSettingsSecurityRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
     '/_dashboard/settings/sso': {
       id: '/_dashboard/settings/sso'
       path: '/sso'
@@ -375,13 +452,19 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
+  AuthResetPasswordTokenRoute: typeof AuthResetPasswordTokenRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
+  AuthResetPasswordTokenRoute: AuthResetPasswordTokenRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -390,6 +473,7 @@ interface DashboardSettingsRouteChildren {
   DashboardSettingsConnectionsRoute: typeof DashboardSettingsConnectionsRoute
   DashboardSettingsMandateRoute: typeof DashboardSettingsMandateRoute
   DashboardSettingsMembersRoute: typeof DashboardSettingsMembersRoute
+  DashboardSettingsSecurityRoute: typeof DashboardSettingsSecurityRoute
   DashboardSettingsSsoRoute: typeof DashboardSettingsSsoRoute
   DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
 }
@@ -398,6 +482,7 @@ const DashboardSettingsRouteChildren: DashboardSettingsRouteChildren = {
   DashboardSettingsConnectionsRoute: DashboardSettingsConnectionsRoute,
   DashboardSettingsMandateRoute: DashboardSettingsMandateRoute,
   DashboardSettingsMembersRoute: DashboardSettingsMembersRoute,
+  DashboardSettingsSecurityRoute: DashboardSettingsSecurityRoute,
   DashboardSettingsSsoRoute: DashboardSettingsSsoRoute,
   DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
 }

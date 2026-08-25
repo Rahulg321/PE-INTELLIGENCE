@@ -10,6 +10,7 @@ import {
   rateLimits,
 } from "db";
 import { cookiePrefix } from "./cookies";
+import { sendEmail } from "./email";
 import { env, isGoogleConfigured } from "./env";
 import { notifySignedIn } from "./signed-in";
 
@@ -47,6 +48,30 @@ export const authOptions: BetterAuthOptions = {
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 256,
+    requireEmailVerification: true,
+    resetPasswordTokenExpiresIn: 60 * 60,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        text: `Click the link below to reset your password:\n${url}`,
+        html: `<p>Click the link below to reset your password:</p><p><a href="${url}">${url}</a></p>`,
+      });
+    },
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Verify your email address",
+        text: `Click the link below to verify your email address:\n${url}`,
+        html: `<p>Click the link below to verify your email address:</p><p><a href="${url}">${url}</a></p>`,
+      });
+    },
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    autoSignInAfterVerification: true,
   },
   account: {
     accountLinking: {

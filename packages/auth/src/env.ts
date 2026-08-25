@@ -21,6 +21,10 @@ const appUrls = (readOptional("APP_URL") ?? apiUrl)
   .filter(Boolean);
 const isProduction = process.env.NODE_ENV === "production";
 const cookieDomain = readOptional("COOKIE_DOMAIN");
+const emailMode: "send" | "log" =
+  readOptional("EMAIL_MODE") === "send" ? "send" : "log";
+const emailFrom =
+  readOptional("EMAIL_FROM") ?? `noreply@${new URL(apiUrl).host}`;
 
 const trustedOrigins = [...new Set([apiUrl, ...appUrls])];
 
@@ -33,6 +37,8 @@ export const env = Object.freeze({
   secret: readOptional("BETTER_AUTH_SECRET"),
   googleClientId: readOptional("GOOGLE_CLIENT_ID"),
   googleClientSecret: readOptional("GOOGLE_CLIENT_SECRET"),
+  emailMode,
+  emailFrom,
 });
 
 export { isGoogleConfigured };

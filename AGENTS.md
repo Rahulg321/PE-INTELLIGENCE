@@ -1,17 +1,73 @@
 # AGENTS.md
 
-Bun workspace monorepo (turbo) for a TanStack Start + Better Auth + Drizzle app. Only `apps/web` is real; `apps/docs` is stale create-turbo boilerplate and `apps/server` is empty. `packages/ui`, `packages/eslint-config`, `packages/typescript-config` are leftover scaffolds.
+Bun workspace monorepo (turbo) for a TanStack Start + Better Auth + Drizzle product.
+
+- **Apps** (`apps/`): `web` (main product — Vite + TanStack Start on Cloudflare Workers, port 3000), `frontend` (secondary TanStack Start app, port 3002), `agent` (Bun script: AI SDK + `@repo/ai` + `db`), `chat-agent` (Bun script: `chat` SDK + Slack adapter, port 3001).
+- **Packages** (`packages/`): `auth` (`@repo/auth`, Better Auth), `db` (Drizzle + Postgres), `env` (`@repo/env`, root env loading), `ai` (`@repo/ai`, AI SDK config), `mail` (stub), `eslint-config` (`@repo/eslint-config`).
+- All task orchestration runs through **Turborepo** — see "Turborepo build system & CI" below. Prefer root-level commands.
 
 ## Commands
 
-Use **Bun**, not npm/pnpm (pinned in `devEngines`; see `packages/db/CLAUDE.md`).
+Use **Bun**, not npm/pnpm (pinned in `devEngines`; see `packages/db/CLAUDE.md`). Prefer root-level turbo commands (see "Turborepo build system & CI"); run per-package commands when you only need one package.
 
-- Web dev: `cd apps/web && bun --bun run dev` (port 3000). The `--bun` flag matters.
-- Typecheck web: `cd apps/web && bunx tsc --noEmit`. Note root `turbo run check-types` does NOT cover `apps/web` (only `packages/auth`/`packages/env` define that script).
-- Lint web: `cd apps/web && bun run lint`. Baseline is NOT clean — pre-existing errors in `src/components/ui/button.tsx`, `src/components/ui/alert.tsx`, `src/components/ui/sidebar.tsx` (`import/consistent-type-specifier-style`, plus `no-shadow` warnings in sidebar); don't treat these as yours.
+- `bun run dev` — start all app dev servers concurrently (web :3000, frontend :3002, agent, chat-agent :3001). Ctrl+C stops them all.
+- `bun run check-types` — typecheck **all** packages (web + frontend included) in parallel.
+- `bun run test` — bun tests in `auth`, `env`, `chat-agent`.
+- `bun run lint` — eslint in `web`, `auth`, `env`.
+- `bun run build` — build `web` + `frontend` (deps first, cached).
+- `bun run watch` — `turbo watch check-types`: re-typecheck affected packages on save.
+- `bun run cf:deploy` / `cf:versions` — build → migrate → deploy flow (see Deploy below).
+- Web dev (single app): `cd apps/web && bun --bun run dev` (port 3000). The `--bun` flag matters. Typecheck web alone: `cd apps/web && bunx tsc --noEmit`.
+- Lint web: `cd apps/web && bun run lint`. Baseline is NOT clean — pre-existing errors in `src/components/ui/button.tsx`, `src/components/ui/alert.tsx`, `src/components/ui/sidebar.tsx` (`import/consistent-type-specifier-style`, plus `no-shadow` warnings in sidebar); don't treat these as yours. Root `turbo run lint` also fails on this baseline.
 - Routes are auto-generated: `routeTree.gen.ts` is produced by `tsr generate`. Never hand-edit it.
 - Env package (`packages/env`): `cd packages/env && bun test` (bun:test), `bun run check-types`, `bun run lint`. Lint is clean here.
 - Auth package (`packages/auth`, `@repo/auth`): `cd packages/auth && bun test`, `bun run check-types`, `bun run lint`, and `DATABASE_URL=... bun run auth:generate` to regenerate the auth schema (see Auth section).
+
+## Turborepo build system & CI
+
+Root `turbo.json` is the single source of truth for task orchestration. Root scripts delegate via `turbo run <task>`; Turbo only runs a task in packages that define that script (a task with no matching script anywhere is a no-op). Turbo builds the package dependency graph, runs independent tasks in parallel, and caches results in `.turbo/cache` (gitignored).
+
+**Tasks:**
+
+| Task | Runs in | Cache | Notes |
+|---|---|---|---|
+| `transit` | — (no script) | — | Invisible dependency edge so `lint`/`check-types` run in parallel yet invalidate when a dependency's source changes. Never add a script named `transit`. |
+| `build` | `web`, `frontend` | ✅ `dist/**`, `.wrangler/**` | `dependsOn: ["^build"]` — dependencies build first. Vite output. |
+| `lint` | `web`, `auth`, `env` | ✅ | `dependsOn: ["transit"]`. Web baseline is red (see Commands). |
+| `check-types` | all 7 packages | ✅ | `dependsOn: ["transit"]`. `tsc --noEmit`. |
+| `test` | `auth`, `env`, `chat-agent` | ✅ | `bun test`. |
+| `auth:generate` | `auth` | ✅ | `dependsOn: ["^auth:generate"]`; regenerates the Better Auth schema (see Auth). |
+| `db:migrate:remote` | `db` | ❌ | Side-effecting remote migration. |
+| `cf:deploy` | `web` | ❌ | `dependsOn: ["build", "db#db:migrate:remote"]` → migrate + build in parallel, then `wrangler deploy`. |
+| `cf:versions` | `web` | ❌ | `dependsOn: ["build"]` → build, then `wrangler versions upload`. |
+| `dev` | all 4 apps | ❌, `persistent: true` | Long-running dev servers — never cached (can't cache a running server), `persistent` so Turbo never waits for them to exit. |
+
+**Global hash inputs** — `globalEnv` (8 vars: `NODE_ENV`, `DATABASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `APP_URL`, `COOKIE_DOMAIN`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`) and `globalDependencies: [".env*"]` are baked into every task's cache key. Changing one of these vars or the root `.env`/`.env.local` invalidates all caches. `outputLogs: "new-only"` on build/lint/check-types/test suppresses logs on cache hits (errors always shown).
+
+**Day-to-day:**
+
+- `bun run dev` — starts all 4 dev servers concurrently and streams their logs; Ctrl+C stops them. (Root script: `turbo run dev --filter="./apps/*"`.)
+- `bun run watch` — `turbo watch check-types`: re-typechecks affected packages on save (handy while developing).
+- `bun run check-types` / `test` / `lint` / `build` — one command covers every package that has the script; second run is `FULL TURBO` (all cache hits).
+
+**Deploy flow:** `bun run cf:deploy` → Turbo runs `db#db:migrate:remote` + `pe-intelligence-web#build` (in parallel), then `wrangler deploy` in `web`. Ordering is Turbo-native — no cross-package `--cwd` pathing. `apps/web`'s `deploy` script is just `turbo run cf:deploy`. Local DB tooling (`db:generate`, `db:migrate`, `db:studio`) is **not** Turbo-registered — run it directly in `packages/db` (see Database section); only `db:migrate:remote` is wired into the deploy graph.
+
+**Cloudflare Workers Builds (dashboard Git integration)** — `pe-intelligence-web` deploys on push to `main`. Critical gotcha: Workers Builds injects **build variables/secrets only into the build command**, never the deploy command. So migrations must run in the build command (where `DATABASE_URL_REMOTE` exists), and the deploy command must be a bare `wrangler deploy` — never `turbo run cf:deploy` (that re-runs `db:migrate:remote`, which fails in the deploy env). Current dashboard settings (Settings → Builds, root directory `/`):
+
+- Build command: `bun install --frozen-lockfile && bunx turbo run db:migrate:remote build --filter=pe-intelligence-web...` (the `...` is required — it includes `db` in scope so migrations run)
+- Deploy command: `cd apps/web && bunx wrangler deploy`
+- Version command (non-production branches): `cd apps/web && bunx wrangler versions upload`
+- `DATABASE_URL_REMOTE` is set as a **build variable** (not runtime) so migrations work during the build step. Runtime vars/secrets live in Settings → Variables & Secrets (they are never available at build time).
+
+This is separate from GitHub Actions CI (`.github/workflows/ci.yml`), which only validates and never deploys.
+
+**CI (`.github/workflows/ci.yml`)** — triggers on push to `main` and any PR:
+
+- Steps: checkout → `oven-sh/setup-bun@v2` (pinned `1.3.12`) → restore `.turbo/cache` via `actions/cache` (sha key + ref-prefixed restore keys) → `bun install --frozen-lockfile` → validate.
+- **PR:** `bunx turbo run build test check-types --affected` — runs only changed packages **and their dependents** (compares against `main`); reuses cache from main/prior PRs.
+- **main:** `bunx turbo run build test check-types` — full strict validation; writes the fresh cache that future PRs restore.
+- Lint is intentionally excluded from CI (web baseline is red). No secrets needed — `build`/`test`/`check-types` don't execute env-reading code and `@repo/env` never throws on a missing `.env`.
+- Remote cache (shared across machines/CI) is **not** configured — caches are local-only. Optional upgrade: `bunx turbo login && bunx turbo link` (Vercel) and add `TURBO_TOKEN`/`TURBO_TEAM` secrets to CI.
 
 ## Shared env loading (`packages/env`, `@repo/env`)
 

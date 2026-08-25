@@ -40,11 +40,11 @@
     },
     "cf:deploy": {
       "cache": false,
-      "dependsOn": ["build", "db#db:migrate:remote"]
+      "dependsOn": ["pe-intelligence-web#build", "db#db:migrate:remote"]
     },
     "cf:versions": {
       "cache": false,
-      "dependsOn": ["build"]
+      "dependsOn": ["pe-intelligence-web#build"]
     },
     "dev": {
       "cache": false,

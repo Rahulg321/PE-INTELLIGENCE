@@ -12,6 +12,14 @@
     "BETTER_AUTH_URL": "https://pe-intelligence-web.rahulguptax14.workers.dev",
     "APP_URL": "https://pe-intelligence-web.rahulguptax14.workers.dev",
   },
+  "send_email": [
+    {
+      "name": "EMAIL",
+      // Once a domain is onboarded (`wrangler email sending enable <domain>`),
+      // add vars `"EMAIL_MODE": "send"` and `"EMAIL_FROM": "noreply@<domain>"`
+      // so transactional auth emails are delivered instead of logged.
+    },
+  ],
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
