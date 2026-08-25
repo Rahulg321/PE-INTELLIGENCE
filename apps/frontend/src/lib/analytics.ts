@@ -85,8 +85,7 @@ export function track(
   // guaranteed on the client (we already returned during SSR), so this is a
   // best-effort delivery that must never throw.
   const endpoint = import.meta.env.PUBLIC_ANALYTICS_ENDPOINT as
-    | string
-    | undefined
+    string | undefined
   if (endpoint) {
     const url = `${endpoint}${BEACON_PATH}`
     try {

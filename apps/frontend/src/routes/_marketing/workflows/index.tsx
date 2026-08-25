@@ -7,6 +7,7 @@ import { WorkflowTimeline } from '~/components/marketing/WorkflowTimeline'
 import { FinalCta } from '~/components/marketing/FinalCta'
 import { workflows } from '~/content/workflows'
 import { lifecycle } from '~/content/lifecycle'
+import { Reveal } from '~/components/marketing/Reveal'
 import { seo } from '~/utils/seo'
 
 export const Route = createFileRoute('/_marketing/workflows/')({
@@ -58,9 +59,9 @@ function WorkflowsHub() {
           kicker="Stages"
           title="Explore each stage of the investment lifecycle."
         />
-        <div className="mt-12">
+        <Reveal className="mt-12">
           <LifecycleDiagram />
-        </div>
+        </Reveal>
         <p className="mx-auto mt-10 max-w-2xl text-center text-[15px] leading-[1.55] text-ink-muted-48">
           {workflows.length} primary workflow stages, each with its own
           capabilities. Select a stage to see how the platform supports the

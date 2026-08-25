@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: replace example.com with the production domain once branding is finalised
+Sitemap: https://example.com/sitemap.xml

@@ -17,6 +17,10 @@ export const Route = createRootRoute({
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
       },
+      {
+        name: 'theme-color',
+        content: '#ffffff',
+      },
       ...seo({
         title: `${brand.name} — ${brand.tagline}`,
         description: brand.description,

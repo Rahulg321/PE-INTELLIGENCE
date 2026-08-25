@@ -1,12 +1,14 @@
 import { cn } from '~/lib/utils'
 import { Kicker } from './Kicker'
 
+type SectionHeaderTone = 'light' | 'dark'
+
 interface SectionHeaderProps {
   kicker?: string
   title: string
   description?: string
   align?: 'left' | 'center'
-  dark?: boolean
+  tone?: SectionHeaderTone
   className?: string
 }
 
@@ -15,9 +17,10 @@ export function SectionHeader({
   title,
   description,
   align = 'center',
-  dark = false,
+  tone = 'light',
   className,
 }: SectionHeaderProps) {
+  const dark = tone === 'dark'
   return (
     <div
       className={cn(

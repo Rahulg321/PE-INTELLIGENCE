@@ -3,20 +3,18 @@ import { cn } from '~/lib/utils'
 export interface FeatureCardData {
   title: string
   copy: string
-  icon?: string
+  eyebrow?: string
 }
+
+type FeatureCardTone = 'light' | 'dark'
 
 export function FeatureCard({
   title,
   copy,
-  icon,
-  dark = false,
-}: {
-  title: string
-  copy: string
-  icon?: string
-  dark?: boolean
-}) {
+  eyebrow,
+  tone = 'light',
+}: FeatureCardData & { tone?: FeatureCardTone }) {
+  const dark = tone === 'dark'
   return (
     <div
       className={cn(
@@ -24,14 +22,14 @@ export function FeatureCard({
         dark ? 'border-white/10 bg-white/[0.02]' : 'border-hairline bg-canvas',
       )}
     >
-      {icon ? (
+      {eyebrow ? (
         <span
           className={cn(
-            'text-[13px] font-semibold',
+            'text-[11px] font-semibold uppercase tracking-[0.12em]',
             dark ? 'text-primary-on-dark' : 'text-primary',
           )}
         >
-          {icon}
+          {eyebrow}
         </span>
       ) : null}
       <h3

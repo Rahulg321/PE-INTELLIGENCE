@@ -90,7 +90,7 @@ export function Navbar() {
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label="Toggle navigation menu"
-            className="flex h-9 w-9 items-center justify-center rounded-[8px] text-ink transition hover:bg-parchment lg:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-[8px] text-ink transition hover:bg-parchment lg:hidden"
           >
             <svg
               viewBox="0 0 20 20"
@@ -99,6 +99,7 @@ export function Navbar() {
               stroke="currentColor"
               strokeWidth="1.5"
               strokeLinecap="round"
+              aria-hidden="true"
             >
               {open ? (
                 <path d="M5 5l10 10M15 5L5 15" />
@@ -113,49 +114,50 @@ export function Navbar() {
       {/* Mobile menu */}
       <div
         id="mobile-menu"
+        inert={!open}
         className={cn(
-          'lg:hidden border-t border-hairline bg-canvas transition-[max-height] duration-200 ease-out overflow-hidden',
-          open
-            ? 'max-h-[calc(100vh-4rem)] overflow-y-auto'
-            : 'max-h-0 border-t-0',
+          'grid lg:hidden transition-[grid-template-rows] duration-300 ease-out',
+          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
         )}
       >
-        <nav aria-label="Primary mobile" className="marketing-container py-4">
-          <ul className="flex flex-col">
-            {primaryNav.map((item) => (
-              <li key={item.href}>
-                <Link
-                  to={item.href}
-                  className="block border-b border-divider-soft py-3.5 text-[17px] text-ink transition hover:text-primary"
+        <div className="min-h-0 overflow-hidden border-t border-hairline bg-canvas">
+          <nav aria-label="Primary mobile" className="marketing-container py-4">
+            <ul className="flex flex-col">
+              {primaryNav.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    to={item.href}
+                    className="block border-b border-divider-soft py-3.5 text-[17px] text-ink transition hover:text-primary"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex flex-col gap-3">
+              {navSecondary.href ? (
+                <Button
+                  to={navSecondary.href}
+                  variant="dark"
+                  size="md"
+                  className="w-full"
                 >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-4 flex flex-col gap-3">
-            {navSecondary.href ? (
-              <Button
-                to={navSecondary.href}
-                variant="dark"
-                size="md"
+                  {navSecondary.label}
+                </Button>
+              ) : null}
+              <Cta
+                event="demo_requested"
+                page={pathname}
+                section="navbar"
+                source="mobile-menu"
+                location="header"
+                label={navCta.label}
+                to={navCta.href}
                 className="w-full"
-              >
-                {navSecondary.label}
-              </Button>
-            ) : null}
-            <Cta
-              event="demo_requested"
-              page={pathname}
-              section="navbar"
-              source="mobile-menu"
-              location="header"
-              label={navCta.label}
-              to={navCta.href}
-              className="w-full"
-            />
-          </div>
-        </nav>
+              />
+            </div>
+          </nav>
+        </div>
       </div>
     </header>
   )

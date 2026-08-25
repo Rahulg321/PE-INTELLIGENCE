@@ -9,6 +9,7 @@ import { FeatureGrid } from './FeatureGrid'
 import { Callout } from './Callout'
 import { FinalCta } from './FinalCta'
 import { LifecycleDiagram } from './LifecycleDiagram'
+import { Reveal } from './Reveal'
 
 /** Standard template for `/workflows/:slug` pages. */
 export function WorkflowPage({ workflow }: { workflow: WorkflowItem }) {
@@ -33,9 +34,9 @@ export function WorkflowPage({ workflow }: { workflow: WorkflowItem }) {
           kicker="How it works"
           title={`The ${workflow.shortLabel.toLowerCase()} flow`}
         />
-        <div className="mt-8">
+        <Reveal className="mt-8">
           <WorkflowTimeline steps={workflow.pipeline} />
-        </div>
+        </Reveal>
       </Section>
 
       <Section>
@@ -44,9 +45,9 @@ export function WorkflowPage({ workflow }: { workflow: WorkflowItem }) {
           kicker="Capabilities"
           title={`What the platform does across ${workflow.shortLabel.toLowerCase()}`}
         />
-        <div className="mt-10">
+        <Reveal className="mt-10">
           <FeatureGrid features={workflow.capabilities} columns={3} />
-        </div>
+        </Reveal>
       </Section>
 
       <Section tone="parchment">
@@ -95,9 +96,9 @@ export function WorkflowPage({ workflow }: { workflow: WorkflowItem }) {
           title="See where this stage fits"
           description="Every stage is configurable around how your firm invests. Explore the rest of the lifecycle."
         />
-        <div className="mt-10">
+        <Reveal className="mt-10">
           <LifecycleDiagram activeSlug={workflow.slug} />
-        </div>
+        </Reveal>
       </Section>
 
       <nav

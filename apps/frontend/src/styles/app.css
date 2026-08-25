@@ -1,3 +1,4 @@
+@import '@fontsource-variable/plus-jakarta-sans';
 @import 'tailwindcss' source('../');
 
 @theme {
@@ -6,7 +7,7 @@
   --color-primary-on-dark: #2997ff;
   --color-ink: #1d1d1f;
   --color-ink-muted-80: #333333;
-  --color-ink-muted-48: #7a7a7a;
+  --color-ink-muted-48: #6e6e73;
   --color-body-muted: #cccccc;
   --color-canvas: #ffffff;
   --color-parchment: #f5f5f7;
@@ -15,7 +16,7 @@
   --color-tile-2: #2a2a2c;
   --color-tile-3: #252527;
   --color-void: #000000;
-  --color-ink-deep: #101114;
+  --color-ink-deep: #0b0f19;
   --color-chip: #d2d2d7;
   --color-hairline: #e0e0e0;
   --color-divider-soft: #f0f0f0;
@@ -24,11 +25,13 @@
   --color-danger: #b42318;
 
   --font-display:
-    'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, sans-serif;
+    'Plus Jakarta Sans Variable', 'SF Pro Display', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-text:
-    'SF Pro Text', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, sans-serif;
+    'Plus Jakarta Sans Variable', 'SF Pro Text', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:
+    ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
 
   --radius-xs: 5px;
   --radius-sm: 8px;
@@ -51,6 +54,8 @@
     letter-spacing: -0.374px;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1,
@@ -61,6 +66,16 @@
   h6 {
     @apply font-display;
     letter-spacing: -0.28px;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
   }
 
   ::selection {
@@ -143,5 +158,28 @@
       linear-gradient(to right, var(--color-hairline) 1px, transparent 1px),
       linear-gradient(to bottom, var(--color-hairline) 1px, transparent 1px);
     background-size: 2.5rem 2.5rem;
+  }
+
+  .hairline-grid-dark {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 2.5rem 2.5rem;
+  }
+
+  .data-ribbon {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    color: var(--color-ink-muted-80);
+  }
+
+  @media (min-width: 640px) {
+    .data-ribbon {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 }

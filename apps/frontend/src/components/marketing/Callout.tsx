@@ -1,16 +1,19 @@
 import { cn } from '~/lib/utils'
 
+type CalloutTone = 'light' | 'dark'
+
 export function Callout({
   title,
   children,
-  dark = false,
+  tone = 'light',
   className,
 }: {
   title?: string
   children: React.ReactNode
-  dark?: boolean
+  tone?: CalloutTone
   className?: string
 }) {
+  const dark = tone === 'dark'
   return (
     <aside
       className={cn(
@@ -26,9 +29,7 @@ export function Callout({
           {title}
         </p>
       ) : null}
-      <div className={cn('mt-2 text-[15px] leading-[1.5]', title ? '' : '')}>
-        {children}
-      </div>
+      <div className="mt-2 text-[15px] leading-[1.5]">{children}</div>
     </aside>
   )
 }

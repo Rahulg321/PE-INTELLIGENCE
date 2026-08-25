@@ -2,12 +2,14 @@ import { useLocation } from '@tanstack/react-router'
 import { Cta } from './Cta'
 import { cn } from '~/lib/utils'
 
+type FinalCtaTone = 'light' | 'dark'
+
 interface FinalCtaProps {
   title?: string
   description?: string
   primaryLabel?: string
   secondaryLabel?: string
-  dark?: boolean
+  tone?: FinalCtaTone
   className?: string
 }
 
@@ -16,10 +18,11 @@ export function FinalCta({
   description = 'Connect your data, workflows, and investment knowledge in one intelligent layer. Request a demo to see the platform around your firm\u2019s process.',
   primaryLabel = 'Request a Demo',
   secondaryLabel = 'Explore the platform',
-  dark = true,
+  tone = 'dark',
   className,
 }: FinalCtaProps) {
   const pathname = useLocation({ select: (s) => s.pathname })
+  const dark = tone === 'dark'
   return (
     <section
       className={cn(

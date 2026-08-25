@@ -1,13 +1,15 @@
 import { cn } from '~/lib/utils'
 import { Kicker } from './Kicker'
 
+type PageHeroTone = 'light' | 'dark'
+
 interface PageHeroProps {
   kicker?: string
   title: string
   description?: string
   children?: React.ReactNode
   className?: string
-  dark?: boolean
+  tone?: PageHeroTone
 }
 
 /** Inner-page hero: breadcrumb-style kicker + headline + lead + optional CTA. */
@@ -17,8 +19,9 @@ export function PageHero({
   description,
   children,
   className,
-  dark = false,
+  tone = 'light',
 }: PageHeroProps) {
+  const dark = tone === 'dark'
   return (
     <section
       className={cn(

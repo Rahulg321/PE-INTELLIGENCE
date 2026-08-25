@@ -21,6 +21,19 @@ const initialValues: DemoRequest = {
   notes: '',
 }
 
+/** Autofill hints per field. `off` avoids password-manager false triggers. */
+const autocompleteFor = {
+  name: 'name',
+  email: 'email',
+  firm: 'organization',
+  role: 'organization-title',
+  firmType: undefined,
+  dealVolume: undefined,
+  workflow: 'off',
+  problem: 'off',
+  notes: 'off',
+} satisfies Partial<Record<keyof DemoRequest, string>>
+
 export function ContactForm() {
   const pathname = useLocation({ select: (s) => s.pathname })
   const [values, setValues] = useState<DemoRequest>(initialValues)
@@ -49,6 +62,10 @@ export function ContactForm() {
         if (key && !next[key]) next[key] = issue.message
       }
       setErrors(next)
+      const firstError = Object.keys(next)[0]
+      if (firstError) {
+        document.getElementById(`contact-${firstError}`)?.focus()
+      }
       return
     }
 
@@ -68,7 +85,10 @@ export function ContactForm() {
 
   if (status === 'success') {
     return (
-      <div className="rounded-lg border border-success/30 bg-success/5 p-8 text-center">
+      <div
+        role="status"
+        className="rounded-lg border border-success/30 bg-success/5 p-8 text-center"
+      >
         <h3 className="font-display text-xl font-semibold text-ink">
           Request received.
         </h3>
@@ -98,6 +118,7 @@ export function ContactForm() {
                 source: 'contact-form',
               })
             }
+            autocomplete={autocompleteFor[field.name]}
             fullWidth={field.type === 'textarea'}
           />
         ))}
@@ -128,6 +149,7 @@ function FormField({
   error,
   onChange,
   onFocus,
+  autocomplete,
   fullWidth,
 }: {
   field: ContactField
@@ -135,6 +157,7 @@ function FormField({
   error?: string
   onChange: (v: string) => void
   onFocus: () => void
+  autocomplete?: string
   fullWidth?: boolean
 }) {
   const baseId = `contact-${field.name}`
@@ -184,6 +207,7 @@ function FormField({
           name={field.name}
           value={value}
           placeholder={field.placeholder}
+          autoComplete={autocomplete}
           onChange={(e) => onChange(e.target.value)}
           onFocus={onFocus}
           rows={field.name === 'notes' ? 4 : 3}
@@ -198,6 +222,8 @@ function FormField({
           type={field.type}
           value={value}
           placeholder={field.placeholder}
+          autoComplete={autocomplete}
+          spellCheck={field.type === 'email' ? false : undefined}
           onChange={(e) => onChange(e.target.value)}
           onFocus={onFocus}
           aria-invalid={error ? true : undefined}

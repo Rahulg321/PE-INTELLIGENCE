@@ -6,6 +6,7 @@ import { AgentCard } from '~/components/marketing/AgentCard'
 import { Callout } from '~/components/marketing/Callout'
 import { FinalCta } from '~/components/marketing/FinalCta'
 import { Cta } from '~/components/marketing/Cta'
+import { Reveal } from '~/components/marketing/Reveal'
 import { ProductMockup } from '~/components/mockups/ProductMockup'
 import { AgentsMockup } from '~/components/mockups/AgentsMockup'
 import { agents } from '~/content/agents'
@@ -89,11 +90,13 @@ function Ai() {
           title="Specific agents, specific outputs."
           description="Each agent takes an input, performs a defined action inside your data, produces a structured output, and hands it to a human for review."
         />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-6">
-          {agents.map((agent) => (
-            <AgentCard key={agent.slug} agent={agent} />
-          ))}
-        </div>
+        <Reveal className="mt-12">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+            {agents.map((agent) => (
+              <AgentCard key={agent.slug} agent={agent} />
+            ))}
+          </div>
+        </Reveal>
       </Section>
 
       <Section tone="parchment">

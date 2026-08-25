@@ -1,15 +1,17 @@
 import { cn } from '~/lib/utils'
 import { FeatureCard, type FeatureCardData } from './FeatureCard'
 
+type FeatureGridTone = 'light' | 'dark'
+
 export function FeatureGrid({
   features,
   columns = 3,
-  dark = false,
+  tone = 'light',
   className,
 }: {
   features: FeatureCardData[]
   columns?: 2 | 3 | 4
-  dark?: boolean
+  tone?: FeatureGridTone
   className?: string
 }) {
   const cols = {
@@ -20,7 +22,7 @@ export function FeatureGrid({
   return (
     <div className={cn('grid gap-4 sm:gap-6', cols[columns], className)}>
       {features.map((f) => (
-        <FeatureCard key={f.title} title={f.title} copy={f.copy} dark={dark} />
+        <FeatureCard key={f.title} title={f.title} copy={f.copy} tone={tone} />
       ))}
     </div>
   )

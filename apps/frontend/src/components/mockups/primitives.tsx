@@ -10,7 +10,7 @@ export function MockLabel({
   return (
     <span
       className={cn(
-        'text-[10px] font-medium uppercase tracking-[0.08em] text-ink-muted-48',
+        'font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-ink-muted-48',
         className,
       )}
     >
