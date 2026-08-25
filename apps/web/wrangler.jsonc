@@ -20,6 +20,14 @@
       // so transactional auth emails are delivered instead of logged.
     },
   ],
+  "queues": {
+    "producers": [
+      {
+        "queue": "agent-enrichment",
+        "binding": "AGENT_QUEUE",
+      },
+    ],
+  },
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",

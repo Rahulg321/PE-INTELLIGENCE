@@ -1,0 +1,56 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pe-intelligence-agent",
+  "compatibility_date": "2026-08-18",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "worker.ts",
+  "observability": {
+    "enabled": true,
+  },
+  // Long-running agent steps are LLM I/O-bound (waiting on network), so CPU stays low.
+  // Bump the per-step CPU ceiling so heavy tool loops don't trip the 30s default.
+  "limits": {
+    "cpu_ms": 300000,
+  },
+  "triggers": {
+    // Safety-net sweep: re-create workflows for tasks that were enqueued but never started
+    // (e.g. lost queue messages). The queue + durable steps handle everything else.
+    "crons": ["* * * * *"],
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      // Same origin as the web worker's Hyperdrive binding.
+      "id": "95ab9f0f669349a585d183c740d9bd27",
+      "localConnectionString": "postgresql://postgres:postgres@127.0.0.1:5432/crm?sslmode=disable",
+    },
+  ],
+  "queues": {
+    "consumers": [
+      {
+        "queue": "agent-enrichment",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        // Delivery retries only cover the consumer failing BEFORE the workflow starts.
+        // Execution retries are owned by workflow step retries (no multiplication).
+        "max_retries": 3,
+        "retry_delay": 10,
+        "dead_letter_queue": "agent-enrichment-dlq",
+      },
+    ],
+  },
+  "workflows": [
+    {
+      "name": "enrichment",
+      "binding": "ENRICHMENT_WORKFLOW",
+      "class_name": "EnrichmentWorkflow",
+    },
+  ],
+  "vars": {
+    // Tier -> model mapping consumed by @repo/ai's getModel() via process.env.
+    // Provider API keys (DEEPSEEK_API_KEY, OPENAI_API_KEY) must be set as secrets:
+    //   cd apps/agent && wrangler secret put DEEPSEEK_API_KEY
+    "MODEL_FAST": "deepseek:deepseek-chat",
+    "MODEL_RESEARCH": "deepseek:deepseek-chat",
+  },
+}

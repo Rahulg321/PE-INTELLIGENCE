@@ -1,5 +1,6 @@
 import { and, eq } from 'drizzle-orm'
 import { agentEvents, agentTasks, companies, db } from 'db'
+import { env } from 'cloudflare:workers'
 import { workspacesService } from '#/features/workspaces/server/workspaces-service'
 import { AGENT_KIND, AGENT_PRIORITY } from '../constants'
 import type { CreateCompanyInput, UpdateCompanyInput } from '../schemas'
@@ -27,9 +28,31 @@ async function enqueueTask(input: {
     priority: input.priority,
     dueAt: new Date(),
   })
+
+  await notifyAgent(input)
 }
 
-function pokeAgent() {
+/**
+ * In production, hand the task to the agent via its queue (the agent Worker's
+ * queue consumer starts a durable Workflow per task). In local dev there is no
+ * queue consumer running, so fall back to poking the local Bun agent directly.
+ */
+async function notifyAgent(input: {
+  workspaceId: string
+  kind: string
+  entityType: string
+  entityId: string
+  reason: string
+  priority: number
+}) {
+  if (!import.meta.env.DEV) {
+    try {
+      await env.AGENT_QUEUE.send(input)
+      return
+    } catch (error) {
+      console.error('queue send failed, falling back to poke', error)
+    }
+  }
   void fetch(`${AGENT_URL}/internal/crm/dispatch`, { method: 'POST' }).catch(
     () => { },
   )
@@ -66,7 +89,6 @@ export const companiesService = {
       priority: AGENT_PRIORITY.companyProfile,
     })
 
-    pokeAgent()
     return { id: companyId }
   },
 

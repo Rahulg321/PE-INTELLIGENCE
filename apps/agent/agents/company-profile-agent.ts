@@ -1,7 +1,5 @@
-import { ToolLoopAgent } from "ai";
-import { z } from "zod";
 import { getModel, isModelAvailable, type ModelTier } from "@repo/ai";
-import type { AgentTask } from "../lib/claim";
+import type { TaskRef } from "../lib/task";
 import { loadCompanyContext } from "../lib/context";
 import { buildCompanyProfileInstructions } from "../instructions/company-profile";
 import { readCompanyHistoryTool } from "../tools/read-company-history";
@@ -9,17 +7,18 @@ import { researchCompanyTool } from "../tools/research-company";
 import { recordFactTool } from "../tools/record-fact";
 import { writeBriefTool } from "../tools/write-brief";
 import { createAuditHook } from "../hooks/audit";
+import { runAgentLoop, type LaneDeps } from "../lib/agent-loop";
 import { START_PROMPT } from "../prompts";
 import { logger } from "../lib/logger";
 
 export async function run(
-    task: AgentTask,
-    options?: { modelTier?: ModelTier },
+    task: TaskRef,
+    deps: LaneDeps = {},
 ): Promise<string> {
     const ctx = await loadCompanyContext(task.entityId);
     if (!ctx) return "company not found";
 
-    const modelTier = options?.modelTier ?? "research";
+    const modelTier = deps.modelTier ?? "research";
     logger.info(
         `company profile lane: company=${ctx.company.displayName} (${ctx.company.id}) modelTier=${modelTier}`,
     );
@@ -31,7 +30,8 @@ export async function run(
         return "no model configured";
     }
 
-    const agent = new ToolLoopAgent({
+    const result = await runAgentLoop({
+        step: deps.step,
         model: getModel(modelTier),
         tools: {
             readCompanyHistory: readCompanyHistoryTool,
@@ -49,26 +49,14 @@ export async function run(
             },
             writeBrief: { entityId: task.entityId },
         },
-        callOptionsSchema: z.object({
-            modelTier: z.enum(["fast", "research"]).optional(),
-        }),
-        prepareCall: ({ options: callOptions, ...settings }) => ({
-            ...settings,
-            model: callOptions.modelTier
-                ? getModel(callOptions.modelTier)
-                : settings.model,
-        }),
-    });
-
-    const result = await agent.generate({
         prompt: START_PROMPT,
-        options: { modelTier: options?.modelTier },
+        maxTurns: 12,
         onStepEnd: createAuditHook(task),
     });
 
     const outcome = result.text ? "brief written" : "research complete";
     logger.info(
-        `company profile lane: done company=${ctx.company.displayName} steps=${result.steps.length} outcome=${outcome}`,
+        `company profile lane: done company=${ctx.company.displayName} turns=${result.turns} outcome=${outcome}`,
     );
     return outcome;
 }

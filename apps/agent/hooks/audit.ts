@@ -1,5 +1,5 @@
 import { db, agentEvents } from "db";
-import type { AgentTask } from "../lib/claim";
+import type { TaskRef } from "../lib/task";
 import { logger } from "../lib/logger";
 
 const randomId = () => crypto.randomUUID();
@@ -13,7 +13,7 @@ export type AuditStep = {
     usage: unknown;
 };
 
-export function createAuditHook(task: AgentTask) {
+export function createAuditHook(task: TaskRef) {
     return async (step: AuditStep) => {
         logger.debug(
             `task[${task.id}] step ${step.stepNumber} finish=${String(step.finishReason)}`,

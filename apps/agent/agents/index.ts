@@ -1,10 +1,10 @@
-import type { ModelTier } from "@repo/ai";
-import type { AgentTask } from "../lib/claim";
+import type { TaskRef } from "../lib/task";
+import type { LaneDeps } from "../lib/agent-loop";
 import * as brandAgent from "./brand-agent";
 import * as companyProfileAgent from "./company-profile-agent";
 
 export type AgentLane = {
-    run(task: AgentTask, options?: { modelTier?: ModelTier }): Promise<string>;
+    run(task: TaskRef, deps?: LaneDeps): Promise<string>;
 };
 
 const lanes: Record<string, AgentLane> = {
@@ -12,6 +12,6 @@ const lanes: Record<string, AgentLane> = {
     company_profile: companyProfileAgent,
 };
 
-export function getLane(task: AgentTask): AgentLane {
+export function getLane(task: TaskRef): AgentLane {
     return lanes[task.kind] ?? companyProfileAgent;
 }

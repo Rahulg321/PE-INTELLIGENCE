@@ -1,19 +1,18 @@
-import { ToolLoopAgent, isStepCount } from "ai";
-import { z } from "zod";
 import { getModel, isModelAvailable, type ModelTier } from "@repo/ai";
 import { db, companies } from "db";
 import { eq } from "drizzle-orm";
-import type { AgentTask } from "../lib/claim";
+import type { TaskRef } from "../lib/task";
 import { buildBrandInstructions } from "../instructions/brand";
 import { lookupBrandTool } from "../tools/brand-lookup";
 import { recordBrandTool } from "../tools/record-brand";
 import { createAuditHook } from "../hooks/audit";
+import { runAgentLoop, type LaneDeps } from "../lib/agent-loop";
 import { START_PROMPT } from "../prompts";
 import { logger } from "../lib/logger";
 
 export async function run(
-    task: AgentTask,
-    options?: { modelTier?: ModelTier },
+    task: TaskRef,
+    deps: LaneDeps = {},
 ): Promise<string> {
     const company = await db.query.companies.findFirst({
         where: { id: task.entityId },
@@ -21,7 +20,7 @@ export async function run(
     });
     if (!company) return "company not found";
 
-    const modelTier = options?.modelTier ?? "fast";
+    const modelTier = deps.modelTier ?? "fast";
     logger.info(`brand lane: company=${company.displayName} (${company.id}) modelTier=${modelTier}`);
 
     if (!isModelAvailable(modelTier)) {
@@ -31,7 +30,8 @@ export async function run(
         return "no model configured";
     }
 
-    const agent = new ToolLoopAgent({
+    const result = await runAgentLoop({
+        step: deps.step,
         model: getModel(modelTier),
         tools: {
             lookupBrand: lookupBrandTool,
@@ -45,24 +45,11 @@ export async function run(
             lookupBrand: { website: company.website },
             recordBrand: { entityId: company.id },
         },
-        callOptionsSchema: z.object({
-            modelTier: z.enum(["fast", "research"]).optional(),
-        }),
-        prepareCall: ({ options: callOptions, ...settings }) => ({
-            ...settings,
-            model: callOptions.modelTier
-                ? getModel(callOptions.modelTier)
-                : settings.model,
-        }),
-        stopWhen: isStepCount(10),
-    });
-
-    const result = await agent.generate({
         prompt: START_PROMPT,
-        options: { modelTier: options?.modelTier },
+        maxTurns: 10,
         onStepEnd: createAuditHook(task),
     });
 
-    logger.info(`brand lane: done company=${company.displayName} steps=${result.steps.length}`);
+    logger.info(`brand lane: done company=${company.displayName} turns=${result.turns}`);
     return "brand processed";
 }

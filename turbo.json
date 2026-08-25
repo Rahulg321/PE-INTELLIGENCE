@@ -50,6 +50,9 @@
       "cache": false,
       "dependsOn": ["pe-intelligence-web#build", "db#db:migrate:remote"]
     },
+    "cf:deploy:agent": {
+      "cache": false
+    },
     "cf:versions": {
       "cache": false,
       "dependsOn": ["pe-intelligence-web#build"]

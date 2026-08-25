@@ -6,10 +6,15 @@
   "scripts": {
     "dev": "bun --watch index.ts",
     "start": "bun index.ts",
-    "check-types": "bunx tsc --noEmit"
+    "check-types": "bunx tsc --noEmit",
+    "cf:deploy:agent": "wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@cloudflare/workers-types": "^5.20260818.1",
+    "@types/bun": "latest",
+    "@types/node": "^22.10.2",
+    "wrangler": "^4.124.0"
   },
   "peerDependencies": {
     "typescript": "^5"

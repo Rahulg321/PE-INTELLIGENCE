@@ -9,50 +9,525 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as MarketingRouteImport } from './routes/_marketing'
+import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
+import { Route as MarketingAboutRouteImport } from './routes/_marketing/about'
+import { Route as MarketingAiRouteImport } from './routes/_marketing/ai'
+import { Route as MarketingContactRouteImport } from './routes/_marketing/contact'
+import { Route as MarketingIntegrationsRouteImport } from './routes/_marketing/integrations'
+import { Route as MarketingLegalRouteImport } from './routes/_marketing/legal'
+import { Route as MarketingProductRouteImport } from './routes/_marketing/product'
+import { Route as MarketingResourcesRouteImport } from './routes/_marketing/resources'
+import { Route as MarketingSecurityRouteImport } from './routes/_marketing/security'
+import { Route as MarketingWorkflowsRouteImport } from './routes/_marketing/workflows'
+import { Route as MarketingLegalPrivacyRouteImport } from './routes/_marketing/legal/privacy'
+import { Route as MarketingLegalSecurityRouteImport } from './routes/_marketing/legal/security'
+import { Route as MarketingLegalTermsRouteImport } from './routes/_marketing/legal/terms'
+import { Route as MarketingWorkflowsIndexRouteImport } from './routes/_marketing/workflows/index'
+import { Route as MarketingWorkflowsDiligenceRouteImport } from './routes/_marketing/workflows/diligence'
+import { Route as MarketingWorkflowsInvestmentCommitteeRouteImport } from './routes/_marketing/workflows/investment-committee'
+import { Route as MarketingWorkflowsOriginationRouteImport } from './routes/_marketing/workflows/origination'
+import { Route as MarketingWorkflowsPortfolioRouteImport } from './routes/_marketing/workflows/portfolio'
+import { Route as MarketingWorkflowsScreeningRouteImport } from './routes/_marketing/workflows/screening'
+import { Route as MarketingWorkflowsTransactionsRouteImport } from './routes/_marketing/workflows/transactions'
+import { Route as MarketingWorkflowsUnderwritingRouteImport } from './routes/_marketing/workflows/underwriting'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const MarketingRoute = MarketingRouteImport.update({
+  id: '/_marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketingIndexRoute = MarketingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingAboutRoute = MarketingAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingAiRoute = MarketingAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingContactRoute = MarketingContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingIntegrationsRoute = MarketingIntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingLegalRoute = MarketingLegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingProductRoute = MarketingProductRouteImport.update({
+  id: '/product',
+  path: '/product',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingResourcesRoute = MarketingResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingSecurityRoute = MarketingSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingWorkflowsRoute = MarketingWorkflowsRouteImport.update({
+  id: '/workflows',
+  path: '/workflows',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingLegalPrivacyRoute = MarketingLegalPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => MarketingLegalRoute,
+} as any)
+const MarketingLegalSecurityRoute = MarketingLegalSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => MarketingLegalRoute,
+} as any)
+const MarketingLegalTermsRoute = MarketingLegalTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => MarketingLegalRoute,
+} as any)
+const MarketingWorkflowsIndexRoute = MarketingWorkflowsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MarketingWorkflowsRoute,
+} as any)
+const MarketingWorkflowsDiligenceRoute =
+  MarketingWorkflowsDiligenceRouteImport.update({
+    id: '/diligence',
+    path: '/diligence',
+    getParentRoute: () => MarketingWorkflowsRoute,
+  } as any)
+const MarketingWorkflowsInvestmentCommitteeRoute =
+  MarketingWorkflowsInvestmentCommitteeRouteImport.update({
+    id: '/investment-committee',
+    path: '/investment-committee',
+    getParentRoute: () => MarketingWorkflowsRoute,
+  } as any)
+const MarketingWorkflowsOriginationRoute =
+  MarketingWorkflowsOriginationRouteImport.update({
+    id: '/origination',
+    path: '/origination',
+    getParentRoute: () => MarketingWorkflowsRoute,
+  } as any)
+const MarketingWorkflowsPortfolioRoute =
+  MarketingWorkflowsPortfolioRouteImport.update({
+    id: '/portfolio',
+    path: '/portfolio',
+    getParentRoute: () => MarketingWorkflowsRoute,
+  } as any)
+const MarketingWorkflowsScreeningRoute =
+  MarketingWorkflowsScreeningRouteImport.update({
+    id: '/screening',
+    path: '/screening',
+    getParentRoute: () => MarketingWorkflowsRoute,
+  } as any)
+const MarketingWorkflowsTransactionsRoute =
+  MarketingWorkflowsTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => MarketingWorkflowsRoute,
+  } as any)
+const MarketingWorkflowsUnderwritingRoute =
+  MarketingWorkflowsUnderwritingRouteImport.update({
+    id: '/underwriting',
+    path: '/underwriting',
+    getParentRoute: () => MarketingWorkflowsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof MarketingIndexRoute
+  '/about': typeof MarketingAboutRoute
+  '/ai': typeof MarketingAiRoute
+  '/contact': typeof MarketingContactRoute
+  '/integrations': typeof MarketingIntegrationsRoute
+  '/legal': typeof MarketingLegalRouteWithChildren
+  '/product': typeof MarketingProductRoute
+  '/resources': typeof MarketingResourcesRoute
+  '/security': typeof MarketingSecurityRoute
+  '/workflows': typeof MarketingWorkflowsRouteWithChildren
+  '/legal/privacy': typeof MarketingLegalPrivacyRoute
+  '/legal/security': typeof MarketingLegalSecurityRoute
+  '/legal/terms': typeof MarketingLegalTermsRoute
+  '/workflows/diligence': typeof MarketingWorkflowsDiligenceRoute
+  '/workflows/investment-committee': typeof MarketingWorkflowsInvestmentCommitteeRoute
+  '/workflows/origination': typeof MarketingWorkflowsOriginationRoute
+  '/workflows/portfolio': typeof MarketingWorkflowsPortfolioRoute
+  '/workflows/screening': typeof MarketingWorkflowsScreeningRoute
+  '/workflows/transactions': typeof MarketingWorkflowsTransactionsRoute
+  '/workflows/underwriting': typeof MarketingWorkflowsUnderwritingRoute
+  '/workflows/': typeof MarketingWorkflowsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/about': typeof MarketingAboutRoute
+  '/ai': typeof MarketingAiRoute
+  '/contact': typeof MarketingContactRoute
+  '/integrations': typeof MarketingIntegrationsRoute
+  '/legal': typeof MarketingLegalRouteWithChildren
+  '/product': typeof MarketingProductRoute
+  '/resources': typeof MarketingResourcesRoute
+  '/security': typeof MarketingSecurityRoute
+  '/': typeof MarketingIndexRoute
+  '/legal/privacy': typeof MarketingLegalPrivacyRoute
+  '/legal/security': typeof MarketingLegalSecurityRoute
+  '/legal/terms': typeof MarketingLegalTermsRoute
+  '/workflows/diligence': typeof MarketingWorkflowsDiligenceRoute
+  '/workflows/investment-committee': typeof MarketingWorkflowsInvestmentCommitteeRoute
+  '/workflows/origination': typeof MarketingWorkflowsOriginationRoute
+  '/workflows/portfolio': typeof MarketingWorkflowsPortfolioRoute
+  '/workflows/screening': typeof MarketingWorkflowsScreeningRoute
+  '/workflows/transactions': typeof MarketingWorkflowsTransactionsRoute
+  '/workflows/underwriting': typeof MarketingWorkflowsUnderwritingRoute
+  '/workflows': typeof MarketingWorkflowsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_marketing': typeof MarketingRouteWithChildren
+  '/_marketing/about': typeof MarketingAboutRoute
+  '/_marketing/ai': typeof MarketingAiRoute
+  '/_marketing/contact': typeof MarketingContactRoute
+  '/_marketing/integrations': typeof MarketingIntegrationsRoute
+  '/_marketing/legal': typeof MarketingLegalRouteWithChildren
+  '/_marketing/product': typeof MarketingProductRoute
+  '/_marketing/resources': typeof MarketingResourcesRoute
+  '/_marketing/security': typeof MarketingSecurityRoute
+  '/_marketing/workflows': typeof MarketingWorkflowsRouteWithChildren
+  '/_marketing/': typeof MarketingIndexRoute
+  '/_marketing/legal/privacy': typeof MarketingLegalPrivacyRoute
+  '/_marketing/legal/security': typeof MarketingLegalSecurityRoute
+  '/_marketing/legal/terms': typeof MarketingLegalTermsRoute
+  '/_marketing/workflows/diligence': typeof MarketingWorkflowsDiligenceRoute
+  '/_marketing/workflows/investment-committee': typeof MarketingWorkflowsInvestmentCommitteeRoute
+  '/_marketing/workflows/origination': typeof MarketingWorkflowsOriginationRoute
+  '/_marketing/workflows/portfolio': typeof MarketingWorkflowsPortfolioRoute
+  '/_marketing/workflows/screening': typeof MarketingWorkflowsScreeningRoute
+  '/_marketing/workflows/transactions': typeof MarketingWorkflowsTransactionsRoute
+  '/_marketing/workflows/underwriting': typeof MarketingWorkflowsUnderwritingRoute
+  '/_marketing/workflows/': typeof MarketingWorkflowsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/ai'
+    | '/contact'
+    | '/integrations'
+    | '/legal'
+    | '/product'
+    | '/resources'
+    | '/security'
+    | '/workflows'
+    | '/legal/privacy'
+    | '/legal/security'
+    | '/legal/terms'
+    | '/workflows/diligence'
+    | '/workflows/investment-committee'
+    | '/workflows/origination'
+    | '/workflows/portfolio'
+    | '/workflows/screening'
+    | '/workflows/transactions'
+    | '/workflows/underwriting'
+    | '/workflows/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/about'
+    | '/ai'
+    | '/contact'
+    | '/integrations'
+    | '/legal'
+    | '/product'
+    | '/resources'
+    | '/security'
+    | '/'
+    | '/legal/privacy'
+    | '/legal/security'
+    | '/legal/terms'
+    | '/workflows/diligence'
+    | '/workflows/investment-committee'
+    | '/workflows/origination'
+    | '/workflows/portfolio'
+    | '/workflows/screening'
+    | '/workflows/transactions'
+    | '/workflows/underwriting'
+    | '/workflows'
+  id:
+    | '__root__'
+    | '/_marketing'
+    | '/_marketing/about'
+    | '/_marketing/ai'
+    | '/_marketing/contact'
+    | '/_marketing/integrations'
+    | '/_marketing/legal'
+    | '/_marketing/product'
+    | '/_marketing/resources'
+    | '/_marketing/security'
+    | '/_marketing/workflows'
+    | '/_marketing/'
+    | '/_marketing/legal/privacy'
+    | '/_marketing/legal/security'
+    | '/_marketing/legal/terms'
+    | '/_marketing/workflows/diligence'
+    | '/_marketing/workflows/investment-committee'
+    | '/_marketing/workflows/origination'
+    | '/_marketing/workflows/portfolio'
+    | '/_marketing/workflows/screening'
+    | '/_marketing/workflows/transactions'
+    | '/_marketing/workflows/underwriting'
+    | '/_marketing/workflows/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  MarketingRoute: typeof MarketingRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_marketing': {
+      id: '/_marketing'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_marketing/': {
+      id: '/_marketing/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof MarketingIndexRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/about': {
+      id: '/_marketing/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof MarketingAboutRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/ai': {
+      id: '/_marketing/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof MarketingAiRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/contact': {
+      id: '/_marketing/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof MarketingContactRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/integrations': {
+      id: '/_marketing/integrations'
+      path: '/integrations'
+      fullPath: '/integrations'
+      preLoaderRoute: typeof MarketingIntegrationsRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/legal': {
+      id: '/_marketing/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof MarketingLegalRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/product': {
+      id: '/_marketing/product'
+      path: '/product'
+      fullPath: '/product'
+      preLoaderRoute: typeof MarketingProductRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/resources': {
+      id: '/_marketing/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof MarketingResourcesRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/security': {
+      id: '/_marketing/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof MarketingSecurityRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/workflows': {
+      id: '/_marketing/workflows'
+      path: '/workflows'
+      fullPath: '/workflows'
+      preLoaderRoute: typeof MarketingWorkflowsRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/legal/privacy': {
+      id: '/_marketing/legal/privacy'
+      path: '/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof MarketingLegalPrivacyRouteImport
+      parentRoute: typeof MarketingLegalRoute
+    }
+    '/_marketing/legal/security': {
+      id: '/_marketing/legal/security'
+      path: '/security'
+      fullPath: '/legal/security'
+      preLoaderRoute: typeof MarketingLegalSecurityRouteImport
+      parentRoute: typeof MarketingLegalRoute
+    }
+    '/_marketing/legal/terms': {
+      id: '/_marketing/legal/terms'
+      path: '/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof MarketingLegalTermsRouteImport
+      parentRoute: typeof MarketingLegalRoute
+    }
+    '/_marketing/workflows/': {
+      id: '/_marketing/workflows/'
+      path: '/'
+      fullPath: '/workflows/'
+      preLoaderRoute: typeof MarketingWorkflowsIndexRouteImport
+      parentRoute: typeof MarketingWorkflowsRoute
+    }
+    '/_marketing/workflows/diligence': {
+      id: '/_marketing/workflows/diligence'
+      path: '/diligence'
+      fullPath: '/workflows/diligence'
+      preLoaderRoute: typeof MarketingWorkflowsDiligenceRouteImport
+      parentRoute: typeof MarketingWorkflowsRoute
+    }
+    '/_marketing/workflows/investment-committee': {
+      id: '/_marketing/workflows/investment-committee'
+      path: '/investment-committee'
+      fullPath: '/workflows/investment-committee'
+      preLoaderRoute: typeof MarketingWorkflowsInvestmentCommitteeRouteImport
+      parentRoute: typeof MarketingWorkflowsRoute
+    }
+    '/_marketing/workflows/origination': {
+      id: '/_marketing/workflows/origination'
+      path: '/origination'
+      fullPath: '/workflows/origination'
+      preLoaderRoute: typeof MarketingWorkflowsOriginationRouteImport
+      parentRoute: typeof MarketingWorkflowsRoute
+    }
+    '/_marketing/workflows/portfolio': {
+      id: '/_marketing/workflows/portfolio'
+      path: '/portfolio'
+      fullPath: '/workflows/portfolio'
+      preLoaderRoute: typeof MarketingWorkflowsPortfolioRouteImport
+      parentRoute: typeof MarketingWorkflowsRoute
+    }
+    '/_marketing/workflows/screening': {
+      id: '/_marketing/workflows/screening'
+      path: '/screening'
+      fullPath: '/workflows/screening'
+      preLoaderRoute: typeof MarketingWorkflowsScreeningRouteImport
+      parentRoute: typeof MarketingWorkflowsRoute
+    }
+    '/_marketing/workflows/transactions': {
+      id: '/_marketing/workflows/transactions'
+      path: '/transactions'
+      fullPath: '/workflows/transactions'
+      preLoaderRoute: typeof MarketingWorkflowsTransactionsRouteImport
+      parentRoute: typeof MarketingWorkflowsRoute
+    }
+    '/_marketing/workflows/underwriting': {
+      id: '/_marketing/workflows/underwriting'
+      path: '/underwriting'
+      fullPath: '/workflows/underwriting'
+      preLoaderRoute: typeof MarketingWorkflowsUnderwritingRouteImport
+      parentRoute: typeof MarketingWorkflowsRoute
     }
   }
 }
 
+interface MarketingLegalRouteChildren {
+  MarketingLegalPrivacyRoute: typeof MarketingLegalPrivacyRoute
+  MarketingLegalSecurityRoute: typeof MarketingLegalSecurityRoute
+  MarketingLegalTermsRoute: typeof MarketingLegalTermsRoute
+}
+
+const MarketingLegalRouteChildren: MarketingLegalRouteChildren = {
+  MarketingLegalPrivacyRoute: MarketingLegalPrivacyRoute,
+  MarketingLegalSecurityRoute: MarketingLegalSecurityRoute,
+  MarketingLegalTermsRoute: MarketingLegalTermsRoute,
+}
+
+const MarketingLegalRouteWithChildren = MarketingLegalRoute._addFileChildren(
+  MarketingLegalRouteChildren,
+)
+
+interface MarketingWorkflowsRouteChildren {
+  MarketingWorkflowsDiligenceRoute: typeof MarketingWorkflowsDiligenceRoute
+  MarketingWorkflowsInvestmentCommitteeRoute: typeof MarketingWorkflowsInvestmentCommitteeRoute
+  MarketingWorkflowsOriginationRoute: typeof MarketingWorkflowsOriginationRoute
+  MarketingWorkflowsPortfolioRoute: typeof MarketingWorkflowsPortfolioRoute
+  MarketingWorkflowsScreeningRoute: typeof MarketingWorkflowsScreeningRoute
+  MarketingWorkflowsTransactionsRoute: typeof MarketingWorkflowsTransactionsRoute
+  MarketingWorkflowsUnderwritingRoute: typeof MarketingWorkflowsUnderwritingRoute
+  MarketingWorkflowsIndexRoute: typeof MarketingWorkflowsIndexRoute
+}
+
+const MarketingWorkflowsRouteChildren: MarketingWorkflowsRouteChildren = {
+  MarketingWorkflowsDiligenceRoute: MarketingWorkflowsDiligenceRoute,
+  MarketingWorkflowsInvestmentCommitteeRoute:
+    MarketingWorkflowsInvestmentCommitteeRoute,
+  MarketingWorkflowsOriginationRoute: MarketingWorkflowsOriginationRoute,
+  MarketingWorkflowsPortfolioRoute: MarketingWorkflowsPortfolioRoute,
+  MarketingWorkflowsScreeningRoute: MarketingWorkflowsScreeningRoute,
+  MarketingWorkflowsTransactionsRoute: MarketingWorkflowsTransactionsRoute,
+  MarketingWorkflowsUnderwritingRoute: MarketingWorkflowsUnderwritingRoute,
+  MarketingWorkflowsIndexRoute: MarketingWorkflowsIndexRoute,
+}
+
+const MarketingWorkflowsRouteWithChildren =
+  MarketingWorkflowsRoute._addFileChildren(MarketingWorkflowsRouteChildren)
+
+interface MarketingRouteChildren {
+  MarketingAboutRoute: typeof MarketingAboutRoute
+  MarketingAiRoute: typeof MarketingAiRoute
+  MarketingContactRoute: typeof MarketingContactRoute
+  MarketingIntegrationsRoute: typeof MarketingIntegrationsRoute
+  MarketingLegalRoute: typeof MarketingLegalRouteWithChildren
+  MarketingProductRoute: typeof MarketingProductRoute
+  MarketingResourcesRoute: typeof MarketingResourcesRoute
+  MarketingSecurityRoute: typeof MarketingSecurityRoute
+  MarketingWorkflowsRoute: typeof MarketingWorkflowsRouteWithChildren
+  MarketingIndexRoute: typeof MarketingIndexRoute
+}
+
+const MarketingRouteChildren: MarketingRouteChildren = {
+  MarketingAboutRoute: MarketingAboutRoute,
+  MarketingAiRoute: MarketingAiRoute,
+  MarketingContactRoute: MarketingContactRoute,
+  MarketingIntegrationsRoute: MarketingIntegrationsRoute,
+  MarketingLegalRoute: MarketingLegalRouteWithChildren,
+  MarketingProductRoute: MarketingProductRoute,
+  MarketingResourcesRoute: MarketingResourcesRoute,
+  MarketingSecurityRoute: MarketingSecurityRoute,
+  MarketingWorkflowsRoute: MarketingWorkflowsRouteWithChildren,
+  MarketingIndexRoute: MarketingIndexRoute,
+}
+
+const MarketingRouteWithChildren = MarketingRoute._addFileChildren(
+  MarketingRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  MarketingRoute: MarketingRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

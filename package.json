@@ -4,6 +4,7 @@
   "scripts": {
     "build": "turbo run build",
     "cf:deploy": "turbo run cf:deploy",
+    "cf:deploy:agent": "turbo run cf:deploy:agent",
     "cf:versions": "turbo run cf:versions",
     "dev": "turbo run dev --filter=\"./apps/*\"",
     "lint": "turbo run lint",
