@@ -1,5 +1,6 @@
 import { db, deals } from 'db'
 import { workspacesService } from '#/features/workspaces/server/workspaces-service'
+import { mapAgentEvents } from '#/lib/agent-events'
 import type { CreateDealInput } from '../schemas'
 
 const randomId = () => crypto.randomUUID()
@@ -56,15 +57,17 @@ export const dealsService = {
     })
     if (!deal) return null
 
-    const events = await db.query.agentEvents.findMany({
-      where: {
-        workspaceId: activeWorkspaceId,
-        entityId: dealId,
-      },
-      columns: { id: true, kind: true, createdAt: true },
-      orderBy: { createdAt: 'desc' },
-      limit: 50,
-    })
+    const events = mapAgentEvents(
+      await db.query.agentEvents.findMany({
+        where: {
+          workspaceId: activeWorkspaceId,
+          entityId: dealId,
+        },
+        columns: { id: true, kind: true, stepNumber: true, payload: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+        limit: 50,
+      }),
+    )
 
     return { deal, events }
   },

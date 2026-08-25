@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  Activity,
   Briefcase,
   MoreVertical,
   Pencil,
@@ -47,6 +46,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import { Separator } from '#/components/ui/separator'
+import { AgentActivity } from '#/components/shared/agent-activity'
 import {
   Sheet,
   SheetContent,
@@ -177,7 +177,7 @@ export function CompanySheet({
                   <DealsTab deals={company.deals} />
                 </TabsContent>
                 <TabsContent value="activity" className="p-6">
-                  <ActivityTab events={data.events} />
+                  <AgentActivity events={data.events} />
                 </TabsContent>
                 <TabsContent value="agent" className="flex min-h-full flex-col">
                   <AgentTab />
@@ -553,35 +553,6 @@ function DealsTab({ deals }: { deals: CompanyDetail['company']['deals'] }) {
           {deal.description && (
             <p className="text-muted-foreground">{deal.description}</p>
           )}
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-function ActivityTab({ events }: { events: CompanyDetail['events'] }) {
-  if (events.length === 0) {
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <Activity />
-          </EmptyMedia>
-          <EmptyTitle>No activity yet</EmptyTitle>
-          <EmptyDescription>
-            Agent runs and updates for this company will show up here.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    )
-  }
-
-  return (
-    <ul className="flex flex-col gap-2">
-      {events.map((event) => (
-        <li key={event.id} className="flex items-center justify-between gap-3 rounded-md border p-3 text-sm">
-          <span className="font-medium">{event.kind}</span>
-          <span className="text-muted-foreground">{formatDate(event.createdAt)}</span>
         </li>
       ))}
     </ul>

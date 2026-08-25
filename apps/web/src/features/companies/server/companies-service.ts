@@ -2,6 +2,7 @@ import { and, eq } from 'drizzle-orm'
 import { agentEvents, agentTasks, companies, db } from 'db'
 import { env } from 'cloudflare:workers'
 import { workspacesService } from '#/features/workspaces/server/workspaces-service'
+import { mapAgentEvents } from '#/lib/agent-events'
 import { AGENT_KIND, AGENT_PRIORITY } from '../constants'
 import type { CreateCompanyInput, UpdateCompanyInput } from '../schemas'
 
@@ -18,8 +19,9 @@ async function enqueueTask(input: {
   reason: string
   priority: number
 }) {
+  const taskId = randomId()
   await db.insert(agentTasks).values({
-    id: randomId(),
+    id: taskId,
     workspaceId: input.workspaceId,
     kind: input.kind,
     entityType: input.entityType,
@@ -29,7 +31,7 @@ async function enqueueTask(input: {
     dueAt: new Date(),
   })
 
-  await notifyAgent(input)
+  await notifyAgent({ ...input, taskId })
 }
 
 /**
@@ -38,6 +40,7 @@ async function enqueueTask(input: {
  * queue consumer running, so fall back to poking the local Bun agent directly.
  */
 async function notifyAgent(input: {
+  taskId: string
   workspaceId: string
   kind: string
   entityType: string
@@ -212,15 +215,17 @@ export const companiesService = {
         },
         columns: { id: true, kind: true, outcome: true },
       }),
-      db.query.agentEvents.findMany({
-        where: {
-          workspaceId: activeWorkspaceId,
-          entityId: companyId,
-        },
-        columns: { id: true, kind: true, createdAt: true },
-        orderBy: { createdAt: 'desc' },
-        limit: 50,
-      }),
+      mapAgentEvents(
+        await db.query.agentEvents.findMany({
+          where: {
+            workspaceId: activeWorkspaceId,
+            entityId: companyId,
+          },
+          columns: { id: true, kind: true, stepNumber: true, payload: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+          limit: 50,
+        }),
+      ),
     ])
 
     return { company, events, enriching: openTasks.length > 0 }

@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { contacts, db } from 'db'
 import { workspacesService } from '#/features/workspaces/server/workspaces-service'
+import { mapAgentEvents } from '#/lib/agent-events'
 import type { CreateContactInput } from '../schemas'
 
 const randomId = () => crypto.randomUUID()
@@ -83,15 +84,17 @@ export const contactsService = {
         },
         columns: { id: true, kind: true },
       }),
-      db.query.agentEvents.findMany({
-        where: {
-          workspaceId: activeWorkspaceId,
-          entityId: contactId,
-        },
-        columns: { id: true, kind: true, createdAt: true },
-        orderBy: { createdAt: 'desc' },
-        limit: 50,
-      }),
+      mapAgentEvents(
+        await db.query.agentEvents.findMany({
+          where: {
+            workspaceId: activeWorkspaceId,
+            entityId: contactId,
+          },
+          columns: { id: true, kind: true, stepNumber: true, payload: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+          limit: 50,
+        }),
+      ),
     ])
 
     return { contact, company, events, enriching: openTasks.length > 0 }

@@ -88,7 +88,11 @@ export default {
     async queue(batch: MessageBatch<EnrichmentTask>, env: Env): Promise<void> {
         for (const message of batch.messages) {
             try {
-                const task = enrichmentTaskSchema.parse(message.body);
+                // Body may arrive as a parsed object (web's send() / json content
+                // type) or as a JSON string (queues API with text content type).
+                const raw = message.body
+                const body = typeof raw === "string" ? JSON.parse(raw) : raw
+                const task = enrichmentTaskSchema.parse(body);
                 await startWorkflow(env, task);
             } catch (error) {
                 // Producer enqueued malformed data — retry per queue config, then DLQ.

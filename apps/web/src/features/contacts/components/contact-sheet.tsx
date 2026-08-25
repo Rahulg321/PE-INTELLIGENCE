@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  Activity,
   Briefcase,
   Mail,
   MoreVertical,
@@ -31,6 +30,7 @@ import {
 import { Skeleton } from '#/components/ui/skeleton'
 import { Spinner } from '#/components/ui/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import { AgentActivity } from '#/components/shared/agent-activity'
 import {
   DEAL_STAGE_LABEL,
   DEAL_STATUS_LABEL,
@@ -142,7 +142,7 @@ export function ContactSheet({
                   <DealsTab deals={company.deals} />
                 </TabsContent>
                 <TabsContent value="activity" className="p-6">
-                  <ActivityTab events={data.events} />
+                  <AgentActivity events={data.events} emptyDescription="Agent runs and updates for this contact will show up here." />
                 </TabsContent>
                 <TabsContent value="agent" className="flex min-h-full flex-col">
                   <AgentTab />
@@ -414,40 +414,6 @@ function DealsTab({ deals }: { deals: ContactDetail['company']['deals'] }) {
   )
 }
 
-function ActivityTab({ events }: { events: ContactDetail['events'] }) {
-  if (events.length === 0) {
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <Activity />
-          </EmptyMedia>
-          <EmptyTitle>No activity yet</EmptyTitle>
-          <EmptyDescription>
-            Agent runs and updates for this contact will show up here.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    )
-  }
-
-  return (
-    <ul className="flex flex-col gap-2">
-      {events.map((event) => (
-        <li
-          key={event.id}
-          className="flex items-center justify-between gap-3 rounded-md border p-3 text-sm"
-        >
-          <span className="font-medium">{event.kind}</span>
-          <span className="text-muted-foreground">
-            {formatDate(event.createdAt)}
-          </span>
-        </li>
-      ))}
-    </ul>
-  )
-}
-
 function AgentTab() {
   return (
     <Empty className="min-h-full border-0">
@@ -479,13 +445,4 @@ function initials(name: string) {
 
 function displayValue(value: string | null | undefined) {
   return value?.trim() || '—'
-}
-
-function formatDate(value: Date | string) {
-  const date = value instanceof Date ? value : new Date(value)
-  if (Number.isNaN(date.getTime())) return '—'
-  return date.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-  })
 }

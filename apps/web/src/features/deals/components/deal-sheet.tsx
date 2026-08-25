@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import {
-  Activity,
   MoreVertical,
   Sparkles,
   Users,
@@ -27,6 +26,7 @@ import {
 } from '#/components/ui/sheet'
 import { Skeleton } from '#/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import { AgentActivity } from '#/components/shared/agent-activity'
 import { cn } from '#/lib/utils'
 import { dealStageValues } from '../schemas'
 import type { DealSheetTab } from '../schemas'
@@ -116,7 +116,7 @@ export function DealSheet({
                   <ContactsTab contacts={contacts} />
                 </TabsContent>
                 <TabsContent value="activity" className="p-6">
-                  <ActivityTab events={data.events} />
+                  <AgentActivity events={data.events} emptyDescription="Agent runs and updates for this deal will show up here." />
                 </TabsContent>
                 <TabsContent value="agent" className="flex min-h-full flex-col">
                   <AgentTab />
@@ -357,40 +357,6 @@ function ContactsTab({
               )}
             </div>
           </div>
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-function ActivityTab({ events }: { events: DealDetail['events'] }) {
-  if (events.length === 0) {
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <Activity />
-          </EmptyMedia>
-          <EmptyTitle>No activity yet</EmptyTitle>
-          <EmptyDescription>
-            Updates for this deal will show up here.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    )
-  }
-
-  return (
-    <ul className="flex flex-col gap-2">
-      {events.map((event) => (
-        <li
-          key={event.id}
-          className="flex items-center justify-between gap-3 rounded-md border p-3 text-sm"
-        >
-          <span className="font-medium">{event.kind}</span>
-          <span className="text-muted-foreground">
-            {formatDate(event.createdAt)}
-          </span>
         </li>
       ))}
     </ul>
