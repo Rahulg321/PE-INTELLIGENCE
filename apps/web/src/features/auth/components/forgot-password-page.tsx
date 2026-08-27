@@ -17,6 +17,7 @@ export function ForgotPasswordPage() {
     if (!canSubmit) return
     setPending(true)
     setError(null)
+
     const { error: resetError } = await requestPasswordReset({
       email: email.trim(),
       redirectTo: `${window.location.origin}/reset-password`,
@@ -62,7 +63,10 @@ export function ForgotPasswordPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           Remembered it?{' '}
-          <Link to="/login" className="text-primary no-underline hover:underline">
+          <Link
+            to="/login"
+            className="text-primary no-underline hover:underline"
+          >
             Sign in
           </Link>
         </p>
@@ -77,7 +81,8 @@ export function ForgotPasswordPage() {
           Forgot your password?
         </h1>
         <p className="mt-2 text-[17px] leading-[1.47] tracking-[-0.374px] text-muted-foreground">
-          Enter the email you signed up with and we&apos;ll send you a reset link.
+          Enter the email you signed up with and we&apos;ll send you a reset
+          link.
         </p>
       </div>
 
@@ -89,7 +94,10 @@ export function ForgotPasswordPage() {
         }}
       >
         <div className="grid gap-2">
-          <Label htmlFor="email" className="text-xs font-semibold tracking-[-0.224px]">
+          <Label
+            htmlFor="email"
+            className="text-xs font-semibold tracking-[-0.224px]"
+          >
             Email
           </Label>
           <Input
@@ -104,7 +112,11 @@ export function ForgotPasswordPage() {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button type="submit" className="w-full" disabled={!canSubmit || pending}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!canSubmit || pending}
+        >
           {pending ? 'Sending…' : 'Send reset link'}
         </Button>
       </form>

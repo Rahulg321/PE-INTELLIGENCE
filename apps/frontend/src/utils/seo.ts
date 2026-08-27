@@ -1,5 +1,6 @@
 import type React from 'react'
 import { brand, siteUrl } from '~/lib/brand'
+import { contentUpdatedAt, pageMirrorPath } from '~/content/site'
 
 type HeadMeta = React.JSX.IntrinsicElements['meta']
 type HeadLink = React.JSX.IntrinsicElements['link']
@@ -28,11 +29,39 @@ export interface SeoOptions {
   canonical?: string
   /** Set false on pages that should not be indexed (e.g. legal pages) */
   index?: boolean
+  /** ISO date the page content was last modified. Defaults to the site-wide content date. */
+  dateModified?: string
+  /** JSON-LD schema type for the page. Defaults to WebPage. */
+  jsonLdType?: string
+  /** Markdown mirror path override. Defaults to `/docs/<canonical>.md`. */
+  mdMirror?: string
 }
 
 export interface SeoResult {
   meta: HeadMeta[]
   links: HeadLink[]
+  scripts: HeadScript[]
+}
+
+interface Crumb {
+  name: string
+  path: string
+}
+
+/** Breadcrumbs from a canonical path, e.g. '/workflows/screening' → Home > Workflows > Screening. */
+function breadcrumbsFromPath(path: string): Crumb[] {
+  const parts = path.split('/').filter(Boolean)
+  const crumbs: Crumb[] = [{ name: 'Home', path: '/' }]
+  let acc = ''
+  for (const part of parts) {
+    acc += `/${part}`
+    const name = part
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ')
+    crumbs.push({ name, path: acc })
+  }
+  return crumbs
 }
 
 /**
@@ -47,8 +76,12 @@ export function seo({
   image,
   canonical,
   index = true,
+  dateModified = contentUpdatedAt,
+  jsonLdType = 'WebPage',
+  mdMirror,
 }: SeoOptions): SeoResult {
   const canonicalHref = canonical ? siteUrl(canonical) : undefined
+  const mirrorHref = mdMirror ?? (canonical ? pageMirrorPath(canonical) : undefined)
 
   const meta: HeadMeta[] = [
     { title },
@@ -62,19 +95,51 @@ export function seo({
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
     ...(image ? [{ name: 'twitter:image', content: image }] : []),
-    { name: 'og:type', content: 'website' },
-    { name: 'og:site_name', content: brand.name },
-    { name: 'og:title', content: title },
-    { name: 'og:description', content: description },
-    { name: 'og:url', content: canonicalHref ?? siteUrl('/') },
-    ...(image ? [{ name: 'og:image', content: image }] : []),
+    { property: 'og:type', content: 'website' },
+    { property: 'og:site_name', content: brand.name },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
+    { property: 'og:url', content: canonicalHref ?? siteUrl('/') },
+    ...(image ? [{ property: 'og:image', content: image }] : []),
   ]
 
-  const links: HeadLink[] = canonicalHref
-    ? [{ rel: 'canonical', href: canonicalHref }]
-    : []
+  const links: HeadLink[] = [
+    ...(canonicalHref ? [{ rel: 'canonical', href: canonicalHref }] : []),
+    // Only point at a markdown mirror on indexable content pages (legal pages
+    // are noindexed and have no mirror).
+    ...(index && mirrorHref
+      ? [{ rel: 'alternate', type: 'text/markdown', href: mirrorHref }]
+      : []),
+  ]
 
-  return { meta, links }
+  const scripts: HeadScript[] = []
+  if (canonicalHref) {
+    const pageSchema: JsonLd = {
+      '@context': 'https://schema.org',
+      '@type': jsonLdType,
+      name: title,
+      headline: title,
+      url: canonicalHref,
+      dateModified,
+    }
+    if (description) {
+      pageSchema.description = description
+    }
+
+    const breadcrumb: JsonLd = {
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbsFromPath(canonical ?? '/').map((crumb, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: crumb.name,
+        item: siteUrl(crumb.path),
+      })),
+    }
+
+    scripts.push(...ldJson({ '@graph': [pageSchema, breadcrumb] }))
+  }
+
+  return { meta, links, scripts }
 }
 
 /**
@@ -84,4 +149,22 @@ export function seo({
  */
 export function ldJson(ld: JsonLd): HeadScript[] {
   return [{ type: 'application/ld+json', children: JSON.stringify(ld) }]
+}
+
+/**
+ * FAQPage JSON-LD from the shared FAQ content. Emits the questions verbatim so
+ * agents can answer them directly from the markup.
+ */
+export function faqLdJson(
+  items: readonly { question: string; answer: string }[],
+): HeadScript[] {
+  return ldJson({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  })
 }

@@ -1,0 +1,22 @@
+# [COMPANY NAME]
+
+> An AI-native investment intelligence and workflow platform that connects your firm’s data, workflows, and investment knowledge in one intelligent layer across the deal lifecycle.
+
+## Documentation
+
+- [Home](/docs/index.md)
+- [product](/docs/product.md)
+- [workflows](/docs/workflows.md)
+- [origination](/docs/workflows/origination.md)
+- [screening](/docs/workflows/screening.md)
+- [underwriting](/docs/workflows/underwriting.md)
+- [diligence](/docs/workflows/diligence.md)
+- [investment committee](/docs/workflows/investment-committee.md)
+- [transactions](/docs/workflows/transactions.md)
+- [portfolio](/docs/workflows/portfolio.md)
+- [ai](/docs/ai.md)
+- [integrations](/docs/integrations.md)
+- [security](/docs/security.md)
+- [resources](/docs/resources.md)
+- [about](/docs/about.md)
+- [contact](/docs/contact.md)

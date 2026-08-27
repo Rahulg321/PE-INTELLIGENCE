@@ -14,6 +14,7 @@ import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
 import { Route as MarketingAboutRouteImport } from './routes/_marketing/about'
 import { Route as MarketingAiRouteImport } from './routes/_marketing/ai'
 import { Route as MarketingContactRouteImport } from './routes/_marketing/contact'
+import { Route as MarketingGlossaryRouteImport } from './routes/_marketing/glossary'
 import { Route as MarketingIntegrationsRouteImport } from './routes/_marketing/integrations'
 import { Route as MarketingLegalRouteImport } from './routes/_marketing/legal'
 import { Route as MarketingProductRouteImport } from './routes/_marketing/product'
@@ -54,6 +55,11 @@ const MarketingAiRoute = MarketingAiRouteImport.update({
 const MarketingContactRoute = MarketingContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => MarketingRoute,
+} as any)
+const MarketingGlossaryRoute = MarketingGlossaryRouteImport.update({
+  id: '/glossary',
+  path: '/glossary',
   getParentRoute: () => MarketingRoute,
 } as any)
 const MarketingIntegrationsRoute = MarketingIntegrationsRouteImport.update({
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof MarketingAboutRoute
   '/ai': typeof MarketingAiRoute
   '/contact': typeof MarketingContactRoute
+  '/glossary': typeof MarketingGlossaryRoute
   '/integrations': typeof MarketingIntegrationsRoute
   '/legal': typeof MarketingLegalRouteWithChildren
   '/product': typeof MarketingProductRoute
@@ -176,6 +183,7 @@ export interface FileRoutesByTo {
   '/about': typeof MarketingAboutRoute
   '/ai': typeof MarketingAiRoute
   '/contact': typeof MarketingContactRoute
+  '/glossary': typeof MarketingGlossaryRoute
   '/integrations': typeof MarketingIntegrationsRoute
   '/legal': typeof MarketingLegalRouteWithChildren
   '/product': typeof MarketingProductRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/_marketing/about': typeof MarketingAboutRoute
   '/_marketing/ai': typeof MarketingAiRoute
   '/_marketing/contact': typeof MarketingContactRoute
+  '/_marketing/glossary': typeof MarketingGlossaryRoute
   '/_marketing/integrations': typeof MarketingIntegrationsRoute
   '/_marketing/legal': typeof MarketingLegalRouteWithChildren
   '/_marketing/product': typeof MarketingProductRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ai'
     | '/contact'
+    | '/glossary'
     | '/integrations'
     | '/legal'
     | '/product'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ai'
     | '/contact'
+    | '/glossary'
     | '/integrations'
     | '/legal'
     | '/product'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/_marketing/about'
     | '/_marketing/ai'
     | '/_marketing/contact'
+    | '/_marketing/glossary'
     | '/_marketing/integrations'
     | '/_marketing/legal'
     | '/_marketing/product'
@@ -330,6 +342,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof MarketingContactRouteImport
+      parentRoute: typeof MarketingRoute
+    }
+    '/_marketing/glossary': {
+      id: '/_marketing/glossary'
+      path: '/glossary'
+      fullPath: '/glossary'
+      preLoaderRoute: typeof MarketingGlossaryRouteImport
       parentRoute: typeof MarketingRoute
     }
     '/_marketing/integrations': {
@@ -500,6 +519,7 @@ interface MarketingRouteChildren {
   MarketingAboutRoute: typeof MarketingAboutRoute
   MarketingAiRoute: typeof MarketingAiRoute
   MarketingContactRoute: typeof MarketingContactRoute
+  MarketingGlossaryRoute: typeof MarketingGlossaryRoute
   MarketingIntegrationsRoute: typeof MarketingIntegrationsRoute
   MarketingLegalRoute: typeof MarketingLegalRouteWithChildren
   MarketingProductRoute: typeof MarketingProductRoute
@@ -513,6 +533,7 @@ const MarketingRouteChildren: MarketingRouteChildren = {
   MarketingAboutRoute: MarketingAboutRoute,
   MarketingAiRoute: MarketingAiRoute,
   MarketingContactRoute: MarketingContactRoute,
+  MarketingGlossaryRoute: MarketingGlossaryRoute,
   MarketingIntegrationsRoute: MarketingIntegrationsRoute,
   MarketingLegalRoute: MarketingLegalRouteWithChildren,
   MarketingProductRoute: MarketingProductRoute,

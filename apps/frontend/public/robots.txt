@@ -1,5 +1,19 @@
+# [COMPANY NAME] — robot access policy
+# AI agents are explicitly welcome; none of the AI bots below are blocked.
+
 User-agent: *
 Allow: /
 
-# TODO: replace example.com with the production domain once branding is finalised
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
 Sitemap: https://example.com/sitemap.xml

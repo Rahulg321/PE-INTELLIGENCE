@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- TODO: replace example.com with the production domain once branding is finalised -->
+<!-- [COMPANY NAME] sitemap — generated from src/content/site.ts -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://example.com/</loc></url>
-  <url><loc>https://example.com/product</loc></url>
-  <url><loc>https://example.com/workflows</loc></url>
-  <url><loc>https://example.com/workflows/origination</loc></url>
-  <url><loc>https://example.com/workflows/screening</loc></url>
-  <url><loc>https://example.com/workflows/underwriting</loc></url>
-  <url><loc>https://example.com/workflows/diligence</loc></url>
-  <url><loc>https://example.com/workflows/investment-committee</loc></url>
-  <url><loc>https://example.com/workflows/transactions</loc></url>
-  <url><loc>https://example.com/workflows/portfolio</loc></url>
-  <url><loc>https://example.com/ai</loc></url>
-  <url><loc>https://example.com/integrations</loc></url>
-  <url><loc>https://example.com/security</loc></url>
-  <url><loc>https://example.com/resources</loc></url>
-  <url><loc>https://example.com/about</loc></url>
-  <url><loc>https://example.com/contact</loc></url>
+  <url><loc>https://example.com/</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/product</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/workflows</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/workflows/origination</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/workflows/screening</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/workflows/underwriting</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/workflows/diligence</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/workflows/investment-committee</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/workflows/transactions</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/workflows/portfolio</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/ai</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/integrations</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/security</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/resources</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/about</loc><lastmod>2026-08-25</lastmod></url>
+  <url><loc>https://example.com/contact</loc><lastmod>2026-08-25</lastmod></url>
 </urlset>

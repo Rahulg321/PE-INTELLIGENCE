@@ -108,6 +108,30 @@ function WorkflowsHub() {
         </div>
       </Section>
 
+      <Section tone="parchment">
+        <SectionHeader
+          align="left"
+          kicker="The stages"
+          title="What each stage does"
+          description="Every stage is a structured workflow with its own capabilities \u2014 and each one flows into the next."
+        />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          {workflows.map((w) => (
+            <div
+              key={w.slug}
+              className="rounded-lg border border-hairline bg-canvas p-6"
+            >
+              <h3 className="text-[17px] font-semibold text-ink">
+                {w.label}
+              </h3>
+              <p className="mt-2 text-[15px] leading-[1.5] text-ink-muted-80">
+                {w.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       <FinalCta />
     </>
   )

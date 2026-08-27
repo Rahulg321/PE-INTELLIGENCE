@@ -18,18 +18,22 @@ import { AgentsMockup } from '~/components/mockups/AgentsMockup'
 import { MemoryMockup } from '~/components/mockups/MemoryMockup'
 import { productSurfaces } from '~/content/productSurfaces'
 import { faqItems } from '~/content/faq'
-import { seo } from '~/utils/seo'
+import { faqLdJson, seo } from '~/utils/seo'
 
 export const Route = createFileRoute('/_marketing/')({
   component: Home,
-  head: () => ({
-    ...seo({
+  head: () => {
+    const page = seo({
       title: '[COMPANY NAME] — AI-native infrastructure for investment teams',
       description:
         'An AI-native investment intelligence and workflow platform that connects your firm\u2019s data, workflows, and investment knowledge in one intelligent layer across the deal lifecycle.',
       canonical: '/',
-    }),
-  }),
+    })
+    return {
+      ...page,
+      scripts: [...page.scripts, ...faqLdJson(faqItems)],
+    }
+  },
 })
 
 function Home() {

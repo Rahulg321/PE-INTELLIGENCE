@@ -118,7 +118,9 @@ export function CompanySheet({
           {!companyQuery.isPending && !company && (
             <>
               <SheetTitle>Company</SheetTitle>
-              <SheetDescription>This company could not be found.</SheetDescription>
+              <SheetDescription>
+                This company could not be found.
+              </SheetDescription>
             </>
           )}
         </SheetHeader>
@@ -262,9 +264,7 @@ function CompanyHeader({
     <div className="flex items-start justify-between gap-4">
       <div className="flex min-w-0 items-start gap-3">
         <Avatar size="lg" className="rounded-lg">
-          {company.logoUrl && (
-            <AvatarImage src={company.logoUrl} alt="" />
-          )}
+          {company.logoUrl && <AvatarImage src={company.logoUrl} alt="" />}
           <AvatarFallback className="rounded-lg">
             {initials(company.displayName)}
           </AvatarFallback>
@@ -323,7 +323,9 @@ function CompanyHeader({
           <form onSubmit={submitEdit} className="flex flex-col gap-4">
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="edit-company-name">Company name</FieldLabel>
+                <FieldLabel htmlFor="edit-company-name">
+                  Company name
+                </FieldLabel>
                 <Input
                   id="edit-company-name"
                   value={name}
@@ -395,9 +397,7 @@ function CompanyHeader({
                 deleteMutation.mutate({ data: { companyId: company.id } })
               }}
             >
-              {deleteMutation.isPending && (
-                <Spinner data-icon="inline-start" />
-              )}
+              {deleteMutation.isPending && <Spinner data-icon="inline-start" />}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -425,7 +425,9 @@ function StatsBar({ company }: { company: CompanyDetail['company'] }) {
   )
   const pipeline = openDeals.reduce((sum, deal) => {
     const value = Number(
-      deal.economics?.enterpriseValue ?? deal.economics?.equityPurchasePrice ?? 0,
+      deal.economics?.enterpriseValue ??
+        deal.economics?.equityPurchasePrice ??
+        0,
     )
     return sum + (Number.isNaN(value) ? 0 : value)
   }, 0)
@@ -467,7 +469,10 @@ function OverviewTab({ company }: { company: CompanyDetail['company'] }) {
     company.website && { label: 'Website', value: company.website },
     company.legalName && { label: 'Legal name', value: company.legalName },
     company.industry && { label: 'Industry', value: company.industry },
-    company.subIndustry && { label: 'Sub-industry', value: company.subIndustry },
+    company.subIndustry && {
+      label: 'Sub-industry',
+      value: company.subIndustry,
+    },
     (company.headquartersCity || company.headquartersCountry) && {
       label: 'Headquarters',
       value: [company.headquartersCity, company.headquartersCountry]
@@ -502,7 +507,9 @@ function OverviewTab({ company }: { company: CompanyDetail['company'] }) {
         <dl className="flex flex-col gap-2.5 text-sm">
           {rows.map((row) => (
             <div key={row.label} className="flex gap-2">
-              <dt className="w-32 shrink-0 text-muted-foreground">{row.label}</dt>
+              <dt className="w-32 shrink-0 text-muted-foreground">
+                {row.label}
+              </dt>
               <dd className="wrap-break-word">{row.value}</dd>
             </div>
           ))}
@@ -542,11 +549,16 @@ function DealsTab({ deals }: { deals: CompanyDetail['company']['deals'] }) {
   return (
     <ul className="flex flex-col gap-2">
       {deals.map((deal) => (
-        <li key={deal.id} className="flex flex-col gap-2 rounded-md border p-3 text-sm">
+        <li
+          key={deal.id}
+          className="flex flex-col gap-2 rounded-md border p-3 text-sm"
+        >
           <div className="flex items-start justify-between gap-3">
             <div className="font-medium">{deal.name}</div>
             <div className="flex items-center gap-1.5">
-              <Badge variant="secondary">{DEAL_STATUS_LABEL[deal.status]}</Badge>
+              <Badge variant="secondary">
+                {DEAL_STATUS_LABEL[deal.status]}
+              </Badge>
               <Badge variant="outline">{DEAL_STAGE_LABEL[deal.stage]}</Badge>
             </div>
           </div>

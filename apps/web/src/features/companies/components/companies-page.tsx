@@ -17,6 +17,7 @@ import { createCompany } from '../server/mutations/create-company'
 import type { CompanySheetAdd, CompanySheetTab } from '../schemas'
 import { CompaniesDataTable } from './companies-data-table'
 import { CompanySheet } from './company-sheet'
+import type { CompanyRow } from './columns'
 
 export function CompaniesPage({
   initialCompanies,
@@ -94,10 +95,31 @@ export function CompaniesPage({
 
   const createMutation = useMutation({
     mutationFn: createCompany,
-    onSuccess: () => {
+    onSuccess: (result, vars) => {
       setName('')
       setWebsite('')
       setCreateOpen(false)
+      const now = new Date()
+      const optimisticRow: CompanyRow = {
+        id: result.id,
+        displayName: vars.data.name.trim(),
+        website: vars.data.website?.trim() ?? null,
+        industry: null,
+        subIndustry: null,
+        logoUrl: null,
+        description: null,
+        employeeCount: null,
+        headquartersCity: null,
+        headquartersCountry: null,
+        enrichmentStatus: 'PENDING',
+        createdAt: now,
+        updatedAt: now,
+        contactCount: 0,
+        openDealCount: 0,
+      }
+      queryClient.setQueryData<CompanyRow[]>(['companies'], (old) =>
+        old ? [optimisticRow, ...old] : [optimisticRow],
+      )
       void queryClient.invalidateQueries({ queryKey: ['companies'] })
     },
   })

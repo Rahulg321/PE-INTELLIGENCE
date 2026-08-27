@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3002",
-    "build": "vite build",
+    "generate-agent-assets": "bun run scripts/generate-agent-assets.ts",
+    "check:agent": "bun run scripts/check-agent-readability.ts",
+    "build": "bun run scripts/generate-agent-assets.ts && vite build",
     "check-types": "tsc --noEmit",
     "preview": "vite preview --port 3002",
     "deploy": "bun run build && wrangler deploy",

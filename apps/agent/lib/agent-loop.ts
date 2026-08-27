@@ -19,7 +19,8 @@ export type StepConfig = {
  * structural so the loop is testable outside a Workflow (local Bun path).
  */
 export type DurableStep = {
-    do(name: string, callback: () => Promise<unknown>, config?: StepConfig): Promise<unknown>;
+    do(name: string, callback: () => Promise<unknown>): Promise<unknown>;
+    do(name: string, config: StepConfig, callback: () => Promise<unknown>): Promise<unknown>;
 };
 
 /**
@@ -76,7 +77,14 @@ async function durable<T>(
     config: StepConfig | undefined,
     callback: () => Promise<T>,
 ): Promise<T> {
-    if (step) return step.do(name, callback, config) as Promise<T>;
+    // The Cloudflare Workflow `step.do` overloads are (name, callback) or
+    // (name, config, callback). Passing the config in the callback position
+    // makes the runtime interpret it as rollback options, which throws
+    // "step.do() rollback option expects a rollback function".
+    if (step) {
+        if (config) return step.do(name, config, callback) as Promise<T>;
+        return step.do(name, callback) as Promise<T>;
+    }
     return callback();
 }
 
